@@ -125,7 +125,7 @@ def plot_reflection_vs_wavevector_xn(r_list, q, Ndots, labels=None):
                 mode='markers',
                 name=name,
                 marker=dict(
-                    size=1.6, opacity=0.72,
+                    size=2.2, opacity=0.92,
                     color=colors[i % len(colors)]  # Циклический выбор цвета
                 )
             )
@@ -136,7 +136,8 @@ def plot_reflection_vs_wavevector_xn(r_list, q, Ndots, labels=None):
         xaxis_title='Значения исходного волнового вектора, Å^-1',
         yaxis_title='Значения коэффициента отражения',
         yaxis_type='log',
-        legend_title="Легенда"
+        width=1440,  # Увеличенная ширина графика
+        height=600   # Увеличенная высота графика
     )
     
-    fig.show()  
+    fig.show()

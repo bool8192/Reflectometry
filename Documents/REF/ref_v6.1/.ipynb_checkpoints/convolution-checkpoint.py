@@ -1,48 +1,50 @@
 from scipy.stats import norm
 import numpy as np
-from calculating import *
 from variables import *
 
-def convolution(r, qmax, q0, Ndots_norm, sigma01, sigma02, gapi):
-    """
-    Применяет гауссову свертку к массиву комплексных чисел с динамической шириной гауссиана
-    
-    Parameters:
-    r (np.array): входной массив комплексных коэффициентов отражения
-    qmax (float): максимальное значение q для нормировки
-    q0 (np.array): массив значений q
-    Ndots_norm (int): количество точек для построения нормального распределения
-    sigma01 (float): ширина гауссиана для свертки в начале диапазона 
-    sigma02 (float): ширина гауссиана для свертки в конце диапазона 
-    
-    Returns:
-    np.array: преобразованный массив комплексных чисел
-    """
+def convolution(r, qmax, q0, Ndots_norm, sigma1, sigma2, gapi):
     Ndots = len(r)
     
-    # Создаём матрицу сигм для всех точек
-    sigma_matrix = np.array([resolution_function_smooth_step(qmax, q, sigma01, sigma02, gapi) for q in q0])[:, np.newaxis]
+    # Массив относительных q (нормировка к максимальному значению)
+    q_rel = q0 / qmax
     
-    # Создаём веса для окрестных точек
-    q_window = np.linspace(1-3*np.max(sigma_matrix), 1+3*np.max(sigma_matrix), Ndots_norm)
+    # Вычисляем сигмы для всех точек (уже в относительных единицах)
+    sigma_matrix = np.array([resolution_function_smooth_step(1.0, q, sigma1, sigma2, gapi) 
+                           for q in q_rel])[:, np.newaxis]
     
-    # Создаём матрицу весов
-    weights_matrix = norm.pdf(q_window, 1, sigma_matrix)
-    weights_matrix = weights_matrix / np.sum(weights_matrix, axis=1)[:, np.newaxis]
+    # Динамическое окно для каждого q (относительные отклонения)
+    q_window = np.linspace(-3, 3, Ndots_norm)[np.newaxis, :]  # В сигмах
     
-    # Создаём матрицу индексов для всех точек
-    q_matrix = q0[:, np.newaxis] * q_window
-    indices_matrix = np.searchsorted(q0, q_matrix)
+    # Абсолютные q-значения для свертки
+    q_abs = q0[:, np.newaxis] * (1 + sigma_matrix * q_window)
     
-    # Маска для индексов, выходящих за границы
-    mask = indices_matrix < Ndots
-    indices_matrix = indices_matrix * mask
+    # Поиск ближайших индексов с защитой границ
+    indices = np.clip(np.searchsorted(q0, q_abs), 0, Ndots-1)
     
-    # Создаём маску весов соответствующего размера
-    weights_matrix_masked = weights_matrix * mask
+    # Вычисление весов
+    weights = norm.pdf(q_window, 0, 1)  
+    weights = np.repeat(weights, len(q0), axis=0)  # Повторяем для всех точек
     
-    # Получаем значения r для всех индексов
-    r_matrix = r[indices_matrix] * mask
+    # Маска валидных точек (в пределах исходного диапазона)
+    valid_mask = (q_abs >= q0[0]) & (q_abs <= q0[-1])
+    weights *= valid_mask
     
-    # Считаем взвешенное среднее
-    return np.sum(r_matrix * weights_matrix_masked, axis=1)
+    # Нормировка весов для каждого q
+    sum_weights = np.sum(weights, axis=1, keepdims=True)
+    sum_weights[sum_weights == 0] = 1.0  # Защита от деления на ноль
+    weights /= sum_weights
+    
+    # Применяем свертку
+    return np.sum(r[indices] * weights, axis=1)
+
+def resolution_function_smooth_step(qmax_rel, q_rel, sigma1, sigma2, gap):
+    transition_start = 0.5 - gap/2
+    transition_end = 0.5 + gap/2
+    
+    if q_rel > transition_end:
+        return sigma2
+    elif q_rel > transition_start:
+        t = (q_rel - transition_start) / (gap)
+        return sigma1 * (1 - t) + sigma2 * t
+    else:
+        return sigma1
