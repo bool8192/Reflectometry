@@ -40,7 +40,7 @@ def prepare_data(r, q, Ndots):
     for i in range(0, Ndots-1):
         r_real.append(r[i].real)
         r_img.append(r[i].imag)
-        r_abs.append(m.polar(r[i])[0])  # Используем cmath для расчета абсолютного значения
+        r_abs.append(m.polar(r[i])[0]**2)  # Используем cmath для расчета абсолютного значения
         q0_a.append(q[i].real * 1e-10)
     
     return r_real, r_img, r_abs, q0_a

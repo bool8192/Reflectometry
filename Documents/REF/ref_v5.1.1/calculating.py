@@ -35,8 +35,8 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     dk0 = kmax/Ndots
     Pe = np.array([[1, 0], [0, 1]])
 
-    # Создание сетки
-    i_indices = np.arange(Ndots) + 0.001
+   # Создание сетки
+    i_indices = np.arange(Ndots) + 0.999
     j_indices = np.arange(len(ro))
     j_grid, i_grid = np.meshgrid(j_indices, i_indices, indexing='ij')
     
@@ -73,5 +73,5 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
         M = dmi[0] @ Pe @ dm[-1]
     
     # Расчет коэффициента отражения
-    reflection_coefficient = M[:,1,0]/M[:,0,0]
-    return reflection_coefficient, dk0
+    r = (M[:,1,0]/M[:,0,0])
+    return r, dk0

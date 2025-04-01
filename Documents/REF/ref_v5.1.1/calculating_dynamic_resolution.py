@@ -3,30 +3,23 @@ from variables import *
 from transform_array import *
 
 
-def resolution_function(qmax, q, sigma1, sigma2):
-  sigma = sigma1 + (sigma2-sigma1)*(q/qmax)
-  return sigma
-
-
-def resolution_function_step(qmax, q, sigma1, sigma2):
-  if q > qmax/2: 
-      sigma = sigma2
+def resolution_function_smooth_step(qmax, q, sigma1, sigma2, gap):
+  if gap != 0:
+      if q > (0.5+gap/2)*qmax: 
+          sigma = sigma2
+      elif (q <= (0.5+gap/2)*qmax and q > (0.5-gap/2)*qmax):
+          sigma = (q-qmax/2)*(sigma2-sigma1)/(qmax*gap) + (sigma2+sigma1)/2
+      else:
+          sigma = sigma1
   else:
-      sigma = sigma1
+      if q > qmax/2:
+          sigma = sigma2
+      else:
+          sigma = sigma1
   return sigma
 
 
-def resolution_function_smooth_step(qmax, q, sigma1, sigma2):
-  if q > 0.55*qmax: 
-      sigma = sigma2
-  elif (q <= 0.55*qmax and q > 0.45*qmax):
-      sigma = sigma1 + (sigma2-sigma1)*(q/qmax)
-  else:
-      sigma = sigma1
-  return sigma
-
-
-def dynamic_mesh_q(kmax, Ndots):
+def dynamic_mesh_q(kmax, Ndots, gap):
     """
     Генерация разбиения = секти с динамическим шагом;
     принципиально не векторизуемо, так как вычисляется рекурсивно.
@@ -43,11 +36,11 @@ def dynamic_mesh_q(kmax, Ndots):
     """
     q0 = [kmax/Ndots]
     while q0[-1] < kmax:
-        q0.append(q0[-1]+5.9*q0[-1]*resolution_function(kmax, q0[-1], sigma1, sigma2)/Ndots_norm)
+        q0.append(q0[-1]+5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm)
     return np.array(q0)
 
 
-def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots):
+def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     """
     Расчет матриц и коэффициента отражения для оптической системы.
 
@@ -70,7 +63,7 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots):
     d = np.array(transform_array(matrix, rough_res, lambda z: z))[:,0]
 
     # Расчет базовых параметров
-    q0 = dynamic_mesh_q(kmax, Ndots)
+    q0 = dynamic_mesh_q(kmax, Ndots, gap)
     Ndots = len(q0)
     Pe = np.array([[1, 0], [0, 1]])
 

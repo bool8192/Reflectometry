@@ -36,7 +36,7 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     Pe = np.array([[1, 0], [0, 1]])
 
     # Создание сетки
-    i_indices = np.arange(Ndots)+0.001
+    i_indices = np.arange(Ndots)+0.999
     j_indices = np.arange(len(ro))
     j_grid, i_grid = np.meshgrid(j_indices, i_indices, indexing='ij')
     

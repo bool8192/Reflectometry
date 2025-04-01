@@ -3,7 +3,7 @@ import numpy as np
 from calculating_dynamic_resolution import *
 from variables import *
 
-def convolution(r, qmax, q0, Ndots_norm, sigma01, sigma02, mode):
+def convolution(r, qmax, q0, Ndots_norm, sigma01, sigma02, gapi):
     """
     Применяет гауссову свертку к массиву комплексных чисел с динамической шириной гауссиана
     
@@ -21,12 +21,7 @@ def convolution(r, qmax, q0, Ndots_norm, sigma01, sigma02, mode):
     Ndots = len(r)
     
     # Создаём матрицу сигм для всех точек
-    if mode == 'step':
-        sigma_matrix = np.array([resolution_function_step(qmax, q, sigma01, sigma02) for q in q0])[:, np.newaxis]
-    elif mode == 'smooth_step':
-        sigma_matrix = np.array([resolution_function_smooth_step(qmax, q, sigma01, sigma02) for q in q0])[:, np.newaxis]
-    else:
-        sigma_matrix = np.array([resolution_function(qmax, q, sigma01, sigma02) for q in q0])[:, np.newaxis]
+    sigma_matrix = np.array([resolution_function_smooth_step(qmax, q, sigma01, sigma02, gapi) for q in q0])[:, np.newaxis]
     
     # Создаём веса для окрестных точек
     q_window = np.linspace(1-3*np.max(sigma_matrix), 1+3*np.max(sigma_matrix), Ndots_norm)
