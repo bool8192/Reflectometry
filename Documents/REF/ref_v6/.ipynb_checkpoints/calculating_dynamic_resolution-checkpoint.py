@@ -36,9 +36,9 @@ def dynamic_mesh_q(kmax, Ndots, gap):
         Массив q0
     """
     q0 = [kmax/Ndots]
-    while q0[-1] < kmax:
+    while q0[-1] < kmax*0.5:
         q0.append(q0[-1]+5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm)
-    return np.array(q0)
+    return 2*np.array(q0)
 
 
 def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
@@ -66,7 +66,7 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     d = np.array(transform_array(matrix, rough_res, lambda z: z))[:,0]
 
     # Расчет базовых параметров
-    q0 = dynamic_mesh_q(kmax, Ndots, gap)
+    q0 = dynamic_mesh_q(kmax, Ndots, gap)*0.50
     Ndots = len(q0)
     Pe = np.array([[1, 0], [0, 1]])
 

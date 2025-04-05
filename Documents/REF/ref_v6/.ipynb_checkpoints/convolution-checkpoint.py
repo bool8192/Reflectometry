@@ -3,6 +3,8 @@ import numpy as np
 
 def convolution(r, qmax, q0, Ndots_norm, sigma1, sigma2, gapi):
     Ndots = len(r)
+    sigma1/=2
+    sigma2/=2
     
     # Массив относительных q (нормировка к максимальному значению)
     q_rel = q0 / qmax

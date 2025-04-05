@@ -6,4 +6,8 @@ def read_complex_matrix(filename):
             values = line.strip('[] \n').split(',')
             row = [complex(x.strip()) for x in values]
             matrix.append(row)
-    return np.array(matrix)
+    np_matrix = np.array(matrix)
+    np_matrix[:, 0] *= 1e-10   
+    np_matrix[:, 1] *= 1e+14 
+    np_matrix[:, 2] *= 1e-10  
+    return np_matrix
