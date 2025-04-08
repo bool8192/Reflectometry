@@ -74,24 +74,34 @@ def plot_complex_reflection(r, q, Ndots):
 def plot_reflection_vs_wavevector(r, q, Ndots):
     """
     Построение графика зависимости коэффициента отражения от волнового вектора.
-
-    Параметры
-    ---------
-    r : numpy.ndarray
-        Массив коэффициентов отражения
-    q : numpy.ndarray
-        Массив значений волнового вектора
     """
     r_real, r_img, r_abs, q0_a = prepare_data(r, q, Ndots)
-    
-    fig = px.scatter(x=q0_a, y=r_abs,
-                     title='График зависимости коэффициента отражения от волнового вектора',
-                     labels={'x': 'Значения исходного волнового вектора, Å^-1',
-                             'y': 'Значения коэффициента отражения'})
-    
+
+    fig = go.Figure()
+    fig.add_trace(  # Убрано fig= перед go.Scatter
+        go.Scatter(
+            x=q0_a,
+            y=r_abs,
+            mode='lines',
+            marker=dict(
+                size=2.2, 
+                opacity=1,
+                color='darkgreen'
+            )
+        )
+    )
+    fig.update_layout(
+        title='График зависимости коэффициента отражения от волнового вектора',
+        xaxis_title='Значения исходного волнового вектора, Å^-1',
+        yaxis_title='Значения коэффициента отражения',
+        yaxis_type='log',
+        width=1440,
+        height=600
+    )
     fig.update_yaxes(type='log')
     fig.update_traces(marker=dict(size=2.2))
     fig.show()
+
 
 
 def plot_reflection_vs_wavevector_xn(r_list, q, Ndots, labels=None):
@@ -122,7 +132,7 @@ def plot_reflection_vs_wavevector_xn(r_list, q, Ndots, labels=None):
             go.Scatter(
                 x=q0_a,
                 y=r_abs,
-                mode='markers',
+                mode='lines',
                 name=name,
                 marker=dict(
                     size=2.2, opacity=0.92,

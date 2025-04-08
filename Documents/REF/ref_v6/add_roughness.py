@@ -38,7 +38,7 @@ def plot_density_profile(matrix):
         x=depth_bins[:-1],
         y=U,
         mode='lines',
-        line=dict(color='green', shape='hv'),
+        line=dict(color='darkgreen', shape='hv'),
         showlegend=False
     ))
     fig.add_hline(y=0, line=dict(color='black', width=2))
