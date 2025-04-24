@@ -1,8 +1,9 @@
 import numpy as np
 import cmath as m
 from transform_array import *
+from variables import *
 
-def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
+def calculate_matrices_and_reflection(matrix):
     """
     Расчет матриц и коэффициента отражения для оптической системы.
 
@@ -10,11 +11,7 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     ---------
     matrix : numpy.ndarray
         Входная матрица с параметрами слоев
-    rough_res : float
-        Параметр разрешения
-    Ndots : int
-        Количество точек дискретизации
-
+        
     Возвращает
     ----------
     numpy.ndarray
@@ -23,6 +20,11 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     # Инициализация базовых массивов
     ro = np.array(transform_array(matrix, rough_res, lambda z: z))[:, 1]
     d = np.array(transform_array(matrix, rough_res, lambda z: z))[:,0]
+
+    # Расчет базовых параметров
+    dk0 = dq/Ndots_norm
+    Ndots = int(kmax/dk0)
+    Pe = np.array([[1, 0], [0, 1]])
     
     # Создание пустых матриц
     q = np.empty((len(ro), Ndots), dtype=complex)
@@ -30,10 +32,6 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     dmi = np.empty((len(ro), Ndots, 2,2), dtype=complex)
     pm = np.empty((len(ro), Ndots, 2,2), dtype=complex)
     M = np.empty((Ndots, 2,2), dtype=complex)
-    
-    # Расчет базовых параметров
-    dk0 = kmax/Ndots
-    Pe = np.array([[1, 0], [0, 1]])
 
    # Создание сетки
     i_indices = np.arange(Ndots) + 0.999
@@ -74,4 +72,13 @@ def calculate_matrices_and_reflection(matrix, rough_res, Ndots, kmax):
     
     # Расчет коэффициента отражения
     r = (M[:,1,0]/M[:,0,0])
-    return r, dk0
+    r_real = []
+    r_img = []
+    r_abs = []
+    
+    for i in range(0, Ndots-1):
+        r_real.append(r[i].real)
+        r_img.append(r[i].imag)
+        r_abs.append((m.polar(r[i])[0])**2) 
+        
+    return r_abs, r_real, r_img, i_indices*dk0
