@@ -1,8 +1,0 @@
-Ndots :int = 90
-rough_res :int = 16
-kmax :int = 2.4e+9
-sigma :float = 0.03
-sigma1 :float = 0.25
-sigma2 :float = 0.01
-Ndots_norm :int = 11
-lambd : float = 1.52e-10
