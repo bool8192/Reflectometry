@@ -1,7 +1,7 @@
 import numpy as np
 import cmath as m
 from variables import *
-from transform_array import *
+from add_roughness import transform_array
 
 
 def resolution_function_smooth_step(qmax, q, sigma1, sigma2, gap):
