@@ -3,6 +3,7 @@ import math as ma
 import plotly.graph_objects as go
 
 def transform_array(input_array, N):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     result = torch.cat(((input_array[:, 0] - input_array[:, 2]).unsqueeze(1), input_array[:, 1].unsqueeze(1)), dim=1).tolist()
     # Добавил промежуточные точки
     for i in range(1, len(input_array)):
@@ -13,7 +14,7 @@ def transform_array(input_array, N):
             new_d = (rough2) / N
             new_ro =  ((ma.erf(-4*j/N+2)+1)/2)*(ro2-ro1)+ro1
             result.insert(insert_index, [new_d, new_ro])
-    return torch.tensor(result, dtype=complex)
+    return torch.tensor(result, dtype=complex, device=device)
 
 
 def plot_density_profile(matrix):

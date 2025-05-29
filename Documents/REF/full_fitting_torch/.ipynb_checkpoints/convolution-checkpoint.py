@@ -91,7 +91,7 @@ def convolution(r, qmax, q0, Ndots_norm, sigma1, sigma2, gapi):
         weights = torch.where(sum_weights > 0, weights/sum_weights, weights)
     
     # Возврат результата свертки в виде списка
-    return torch.sum(r[indices] * weights, dim=1).tolist()
+    return torch.sum(r[indices] * weights, dim=1)
 
 
 def resolution_function_smooth_step(qmax_rel, q_rel, sigma1, sigma2, gap):

@@ -5,6 +5,7 @@ from add_roughness import transform_array
 
 
 def resolution_function_smooth_step(qmax, q, sigma1, sigma2, gap):
+  device = 'cuda' if torch.cuda.is_available() else 'cpu'
   qmax = qmax/2
   if gap != 0:
       if q > (0.5+gap/2)*qmax: 
@@ -36,13 +37,14 @@ def dynamic_mesh_q(kmax, Ndots, gap):
     torch.Tensor
         Массив q0
     """
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     q0 = [kmax/Ndots]
     while q0[-1] < kmax*0.5:
         if (5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm) > kmax/Ndots:
             q0.append(q0[-1]+5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm)
         else:
             q0.append(q0[-1]+kmax/Ndots)
-    return 2*torch.tensor(q0, dtype=torch.double).requires_grad_(True)
+    return 2*torch.tensor(q0, dtype=torch.double, device=device).requires_grad_(True)
 
 
 def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
@@ -84,6 +86,9 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     4. Композиция полной матрицы системы
     5. Вычисление коэффициентов отражения из результирующей матрицы
     """    
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    
     # Преобразование входных данных в тензоры PyTorch
     if isinstance(matrix, torch.Tensor):
         matrix_tensor = matrix.detach().clone()
@@ -101,13 +106,10 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     d = transformed[:, 0]
 
     # Генерация q0 с использованием torch
-    q0 = dynamic_mesh_q(kmax, Ndots, gap) * 0.50
-    if not isinstance(q0, torch.Tensor):
-        q0 = torch.tensor(q0, dtype=torch.float64)
+    q0 = q * 0.50
     Ndots = q0.numel()
     
     # Инициализация матриц
-    device = q0.device
     Pe = torch.eye(2, dtype=torch.complex128, device=device)
     
     # Создание тензоров с явным указанием устройства

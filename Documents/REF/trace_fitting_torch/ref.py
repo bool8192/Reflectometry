@@ -26,7 +26,7 @@ def reflectometry_trace(q, matrix):
     r, r_real, r_img = calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap)
 
     # Свёртка
-    y = torch.tensor(convolution(r, kmax, q, Ndots_norm, sigma1, sigma2, gap))
+    y = convolution(r, kmax, q, Ndots_norm, sigma1, sigma2, gap)
     
     # Поиск критической точки
     below_threshold = torch.where(y < 0.9)[0]

@@ -5,7 +5,6 @@ from read_complex_matrix import *
 import torch
 import numpy as np
 
-
 def reflectometry(q, matrix):
     """
     Анализ спектра отражательной способности с поиском экстремумов
@@ -23,6 +22,6 @@ def reflectometry(q, matrix):
     rt = torch.tensor(r)
 
     # Свёртка
-    r_conv = torch.tensor(convolution(r, kmax, q, Ndots_norm, sigma1, sigma2, gap))
+    r_conv = convolution(rt, kmax, q, Ndots_norm, sigma1, sigma2, gap)
     
     return rt, r_conv
