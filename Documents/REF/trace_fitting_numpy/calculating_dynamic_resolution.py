@@ -129,4 +129,4 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
         r_img.append(r[i].imag)
         r_abs.append((m.polar(r[i])[0])**2)
         
-    return r_abs, r_real, r_img
+    return torch.tensor(r_abs), torch.tensor(r_real), torch.tensor(r_img)
