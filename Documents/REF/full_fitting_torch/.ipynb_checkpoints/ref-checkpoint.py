@@ -19,9 +19,8 @@ def reflectometry(q, matrix):
     """
     # Загрузка и расчет базовых матриц
     r, r_real, r_img = calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap)
-    rt = torch.tensor(r)
 
     # Свёртка
-    r_conv = convolution(rt, kmax, q, Ndots_norm, sigma1, sigma2, gap)
+    r_conv = convolution(r, kmax, q, Ndots_norm, sigma1, sigma2, gap)
     
-    return rt, r_conv
+    return r, r_conv

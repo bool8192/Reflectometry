@@ -44,10 +44,10 @@ def dynamic_mesh_q(kmax, Ndots, gap):
             q0.append(q0[-1]+5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm)
         else:
             q0.append(q0[-1]+kmax/Ndots)
-    return 2*torch.tensor(q0, dtype=torch.double, device=device).requires_grad_(True)
+    return 2*torch.tensor(q0, dtype=torch.double, device=device)
 
 
-def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
+def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     """
     Вычисление матриц переноса и коэффициента отражения для многослойной оптической системы.
     Все операции выполняются с использованием тензоров PyTorch.
@@ -87,32 +87,28 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     5. Вычисление коэффициентов отражения из результирующей матрицы
     """    
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'    
+
+    scaling_factors = torch.tensor(
+    [1e-10, 1e+14, 1e-10],          
+    device=matr.device,         
+    dtype=matr.dtype            
+    )
+
+    matrix_tensor = matr * scaling_factors
+    #print(matrix_tensor)
     
-    # Преобразование входных данных в тензоры PyTorch
-    if isinstance(matrix, torch.Tensor):
-        matrix_tensor = matrix.detach().clone()
-    else:
-        matrix_tensor = torch.tensor(matrix, dtype=torch.float64)
-    
-    # Преобразование массива с использованием transform_array (предполагается, что он работает с тензорами)
-    transformed = transform_array(matrix_tensor, rough_res)
-    if isinstance(transformed, torch.Tensor):
-        transformed = transformed.detach().clone().type(torch.complex128)
-    else:
-        transformed = torch.tensor(transformed, dtype=torch.complex128)
+    transformed = transform_array(matrix_tensor, rough_res).to(device)
     
     ro = transformed[:, 1]
     d = transformed[:, 0]
 
-    # Генерация q0 с использованием torch
     q0 = q * 0.50
     Ndots = q0.numel()
     
     # Инициализация матриц
     Pe = torch.eye(2, dtype=torch.complex128, device=device)
     
-    # Создание тензоров с явным указанием устройства
     dm = torch.zeros((len(ro), Ndots, 2, 2), dtype=torch.complex128, device=device)
     pm = torch.zeros_like(dm)
     M = torch.zeros((Ndots, 2, 2), dtype=torch.complex128, device=device)
@@ -121,7 +117,6 @@ def calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap):
     j_indices = torch.arange(len(ro), device=device)
     i_indices = torch.arange(Ndots, device=device)
     
-    # Векторизованные вычисления
     j_grid, i_grid = torch.meshgrid(j_indices, i_indices, indexing='ij')
     q0_expanded = q0[i_grid]
     

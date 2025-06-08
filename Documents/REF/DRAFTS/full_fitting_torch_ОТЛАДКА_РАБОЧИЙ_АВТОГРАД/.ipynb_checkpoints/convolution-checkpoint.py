@@ -32,6 +32,12 @@ def convolution(r, qmax, q0, Ndots_norm, sigma1, sigma2, gapi):
     # Определение устройства выполнения (GPU/CPU)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
+    # Конвертация входного массива r в тензор с контролем устройства
+    if not isinstance(r, torch.Tensor):
+        r = torch.tensor(r, device=device, dtype=torch.float32)
+    elif r.device.type != device:
+        r = r.to(device=device)
+    
     # Обработка параметра qmax: преобразование в тензор при необходимости
     qmax = qmax if isinstance(qmax, torch.Tensor) else torch.tensor(qmax, device=device, dtype=torch.float32)
     

@@ -44,7 +44,7 @@ def dynamic_mesh_q(kmax, Ndots, gap):
             q0.append(q0[-1]+5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm)
         else:
             q0.append(q0[-1]+kmax/Ndots)
-    return 2*torch.tensor(q0, dtype=torch.double, device=device)
+    return 2*torch.tensor(q0, dtype=torch.double, device=device).requires_grad_(True)
 
 
 def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
@@ -96,7 +96,6 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     )
 
     matrix_tensor = matr * scaling_factors
-    #print(matrix_tensor)
     
     transformed = transform_array(matrix_tensor, rough_res).to(device)
     
