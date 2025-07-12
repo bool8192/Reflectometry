@@ -5,8 +5,8 @@ def read_complex_matrix(filename):
     with open(filename, 'r') as file:
         for line in file:
             values = line.strip('[] \n').split(',')
-            row = [float(x.strip()) for x in values]
+            row = [complex(x.strip()) for x in values]
             matrix.append(row)
-    pt_matrix = torch.tensor(matrix, dtype=torch.float64, device=device).requires_grad_(True)
+    pt_matrix = torch.tensor(matrix, dtype=torch.complex64, device=device).requires_grad_(True)
 
     return pt_matrix

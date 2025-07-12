@@ -18,11 +18,14 @@ def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I):
     plt.show()
 
     
-def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial_Ibkg, d_bounds, rho_bounds, I_bounds, Ibkg_bounds, max_iter, k, lr=1.2, tol=1e-18):
+def adamw(q, r, func,
+          sigma1, sigma2, 
+          initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg, d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, max_iter, k, lr=1.2, tol=1e-18):
     k -= 1
 
     x_d = initial_d.clone().detach().requires_grad_(True)
-    x_rho = initial_rho.clone().detach().requires_grad_(True)
+    x_r_rho = initial_r_rho.clone().detach().requires_grad_(True)
+    x_i_rho = initial_i_rho.clone().detach().requires_grad_(True)
     x_I = initial_I.clone().detach().requires_grad_(True)
     x_Ibkg = initial_Ibkg.clone().detach().requires_grad_(True)
 
@@ -31,19 +34,20 @@ def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial
 
     optimizer = optim.AdamW([
         {'params': x_d, 'lr': 1000*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
-        {'params': x_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
+        {'params': x_r_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
+        {'params': x_i_rho, 'lr': lr*90, 'weight_decay': 0, 'betas': (0.7, 0.98)},
         {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': 0, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)}
     ])
 
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.93)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.98)
     prev_loss = None
     rel_losses = []
 
     def current_loss_fn_wrapper():
-        return func(x_d, x_rho, sigma1, sigma2, x_I, x_Ibkg)
+        return func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)
 
-    initial_loss_value = func(x_d, x_rho, sigma1, sigma2, x_I, x_Ibkg).item()
+    initial_loss_value = func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
 
     for i in range(max_iter):
         optimizer.zero_grad(set_to_none=True)
@@ -57,7 +61,8 @@ def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial
 
             with torch.no_grad():
                 x_d.data = torch.clamp(x_d.data, d_bounds[:,0], d_bounds[:,1])
-                x_rho.data = torch.clamp(x_rho.data, rho_bounds[:, 0], rho_bounds[:, 1])
+                x_r_rho.data = torch.clamp(x_r_rho.data, r_rho_bounds[:, 0], r_rho_bounds[:, 1])
+                x_i_rho.data = torch.clamp(x_i_rho.data, i_rho_bounds[:, 0], i_rho_bounds[:, 1])
                 x_I.data = torch.clamp_(x_I.data, I_bounds[0], I_bounds[1])
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
 
@@ -66,13 +71,13 @@ def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial
             rel_losses.append((current_loss / initial_loss_value).item())
 
             if i % int((max_iter - 1) / k) == 0:
-                combined_x_for_print = torch.cat((x_d.reshape(-1, 2), x_rho.reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()
+                combined_x_for_print = torch.cat((x_d.reshape(-1, 2), torch.complex(x_r_rho, x_i_rho).reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()
 
                 print("relative_loss:  ", (current_loss / initial_loss_value).item(), "\n",
                       "d:  ", x_d.detach(), "   ",
                       "grad_d:  ", x_d.grad, "\n",
-                      "rho:  ", x_rho.detach(), "   ",
-                      "grad_rho:  ", x_rho.grad, "\n",
+                      "rho:  ", torch.complex(x_r_rho.detach(), x_i_rho.detach()), "   ",
+                      "grad_rho:  ", torch.complex(x_r_rho.grad, x_i_rho.grad), "\n",
                       "I:  ", x_I.detach(), "   ",
                       "grad_I:  ", x_I.grad, "\n",
                       "Ibkg:  ", x_Ibkg.detach(), "   ",
@@ -84,9 +89,9 @@ def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial
         except RuntimeError as e:
             print(f"Ошибка на итерации {i}: {str(e)}")
             print("Текущее значение x_d:", x_d.detach())
-            print("Текущее значение x_rho:", x_rho.detach())
+            print("Текущее значение x_rho:", torch.complex(x_r_rho.detach(), x_i_rho.detach()))
             print("Градиент x_d:", x_d.grad)
-            print("Градиент x_rho:", x_rho.grad)
+            print("Градиент x_rho:", torch.complex(x_r_rho.grad, x_i_rho.grad))
             print("Текущий loss:", current_loss)
             print("Текущий LR:", optimizer.param_groups[0]['lr'])
             print("Текущий I:", x_I.detach())
@@ -99,7 +104,7 @@ def adamw(q, r, func, sigma1, sigma2, initial_d, initial_rho, initial_I, initial
 
         prev_loss = current_loss.item()
 
-    return x_d.detach(), x_rho.detach(), x_I.detach(), x_Ibkg.detach(), current_loss.item(), rel_losses
+    return x_d.detach(), x_r_rho.detach(),  x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), current_loss.item(), rel_losses
 
 
 """

@@ -19,9 +19,9 @@ def transform_array(input_array, N):
         new_ro = ((torch.erf(-4*k/N+2)+1)/2)*(ro2-ro1)+ro1
         for j in range(0, N):
             result.insert(insert_index, torch.stack([new_d, new_ro[j]]))
-    
+            
     final_result = torch.stack(result)
-    return torch.complex(final_result, torch.zeros_like(final_result))
+    return final_result
 
 
 def plot_density_profile(matrix):

@@ -103,7 +103,7 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     ro = transformed[:, 1]
     d = transformed[:, 0]
 
-    q0 = q * 0.50
+    q0 = q * 0.5
     Ndots = q0.numel()
     
     # Инициализация матриц
