@@ -35,7 +35,7 @@ def adamw(q, r, func,
     optimizer = optim.AdamW([
         {'params': x_d, 'lr': 1000*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
         {'params': x_r_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
-        {'params': x_i_rho, 'lr': lr*90, 'weight_decay': 0, 'betas': (0.7, 0.98)},
+        {'params': x_i_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
         {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': 0, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)}
     ])
@@ -49,6 +49,10 @@ def adamw(q, r, func,
 
     initial_loss_value = func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
 
+
+    trim_idx = slice(None, -1)  # =[:-1]
+    tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
+
     for i in range(max_iter):
         optimizer.zero_grad(set_to_none=True)
 
@@ -57,6 +61,15 @@ def adamw(q, r, func,
                 current_loss = current_loss_fn_wrapper()
 
             current_loss.backward()
+
+            # Ручная коррекция градиентов для поддержания tg_x_rho
+            with torch.no_grad():
+                grad_r_rho_trimmed = x_r_rho.grad[trim_idx]
+                grad_i_rho_trimmed = x_i_rho.grad[trim_idx]
+
+                corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
+                x_r_rho.grad[trim_idx] = corrected_grad_r_rho
+
             optimizer.step()
 
             with torch.no_grad():
@@ -65,6 +78,8 @@ def adamw(q, r, func,
                 x_i_rho.data = torch.clamp(x_i_rho.data, i_rho_bounds[:, 0], i_rho_bounds[:, 1])
                 x_I.data = torch.clamp_(x_I.data, I_bounds[0], I_bounds[1])
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
+
+                x_i_rho.data[trim_idx] = x_r_rho.data[trim_idx]*tg_x_rho
 
             scheduler.step()
 
