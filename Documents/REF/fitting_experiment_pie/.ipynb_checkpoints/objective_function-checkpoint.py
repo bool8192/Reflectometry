@@ -1,34 +1,29 @@
 from ref import reflectometry
+import matplotlib.pyplot as plt
 from variables import sigma
 import torch
 import numpy as np
 
 def repair_matrix(bounds, vector):
-    flat_mask = (bounds[..., 0] == -1)
-    indices_flat = flat_mask.nonzero().squeeze()
+    flat_mask = (bounds[..., 0] != bounds[..., 1])
 
+    indices_flat = flat_mask.flatten().nonzero(as_tuple=True)[0]
     flat_base0 = bounds[..., 0].flatten().to(torch.float64)
     flat_base = torch.complex(flat_base0, torch.zeros_like(flat_base0))
-
     vector = vector.to(dtype=flat_base.dtype)
-    result = flat_base.scatter(0, indices_flat, vector)
 
-    target_shape = bounds[..., 0].shape
+    result = flat_base.scatter(0, indices_flat, vector)
     viewed_result = result.view_as(bounds[..., 0])
     return viewed_result
 
 
 class Comparator:
-    def __init__(self, q, orig_matr, orig_sigma1, orig_sigma2, orig_I0, orig_Ibkg):
+    def __init__(self, q, r):
         self.q = q
-        self.orig_matr = orig_matr
-        self.orig_sigma1 = orig_sigma1
-        self.orig_sigma2 = orig_sigma2
-        self.orig_I0 = orig_I0
-        self.orig_Ibkg = orig_Ibkg
+        self.r = r
         
     def compare(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
-        r1, r_conv1 = reflectometry(self.q, self.orig_matr, self.orig_sigma1, self.orig_sigma2, self.orig_I0, self.orig_Ibkg)
+        r_conv1 = self.r
         r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         
         diff = r_conv1 - r_conv2
@@ -38,9 +33,9 @@ class Comparator:
         return loss
 
     def compare_weightless(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
-        r1, r_conv1 = reflectometry(self.q, self.orig_matr, self.orig_sigma1, self.orig_sigma2, self.orig_I0, self.orig_Ibkg)
+        r_conv1 = self.r
         r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
-    
+        
         ratio = (r_conv1 - r_conv2)/r_conv1
         squared = ratio ** 2
         loss = torch.sum(squared)

@@ -9,9 +9,9 @@ from objective_function import *
 def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I):
     r2, r_conv2 = reflectometry(q, matr, var_sigma1, var_sigma2, var_I, var_Ibkg)
     fig, ax = plt.subplots(figsize=(15, 2.6))
-
-    ax.plot(q.cpu().detach().numpy()[0:len(r.tolist())]*1e-9, (I0*r).tolist())
-    ax.plot(q.cpu().detach().numpy()[0:len(r_conv2.tolist())]*1e-9, (var_I*r_conv2).tolist())
+    
+    ax.plot(q.cpu().detach().numpy()[0:len(r.tolist())]*1e-10, (r).tolist())
+    ax.plot(q.cpu().detach().numpy()[0:len(r_conv2.tolist())]*1e-10, (var_I*r_conv2).tolist())
 
     ax.set_yscale('log')
     plt.grid()
@@ -33,11 +33,11 @@ def adamw(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_d, 'lr': 1000*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
-        {'params': x_r_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
-        {'params': x_i_rho, 'lr': lr, 'weight_decay': 0, 'betas': (0.7, 0.98)},
+        {'params': x_d, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)},
+        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)},
+        {'params': x_i_rho, 'lr': lr/20, 'weight_decay': 0, 'betas': (0.99, 0.998)},
         {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': 0, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.7, 0.98)}
+        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)}
     ])
 
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.98)
@@ -48,7 +48,7 @@ def adamw(q, r, func,
         return func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)
 
     initial_loss_value = func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
-
+    #print(x_r_rho, x_i_rho)
 
     trim_idx = slice(None, -1)  # =[:-1]
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
@@ -61,15 +61,16 @@ def adamw(q, r, func,
                 current_loss = current_loss_fn_wrapper()
 
             current_loss.backward()
-
             # Ручная коррекция градиентов для поддержания tg_x_rho
+            
             with torch.no_grad():
                 grad_r_rho_trimmed = x_r_rho.grad[trim_idx]
                 grad_i_rho_trimmed = x_i_rho.grad[trim_idx]
 
                 corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
                 x_r_rho.grad[trim_idx] = corrected_grad_r_rho
-
+            
+            
             optimizer.step()
 
             with torch.no_grad():
@@ -121,54 +122,3 @@ def adamw(q, r, func,
 
     return x_d.detach(), x_r_rho.detach(),  x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), current_loss.item(), rel_losses
 
-
-"""
-def pie_optimizer(q, r, matr,
-                  initial_sigma1, initial_sigma2, initial_d, initial_rho, I, Ibkg, 
-                  d_bounds, rho_bounds, I_bounds, Ibkg_bounds, sigma_bounds):
-
-    loss_function = Comparator(q, matr, 10*sigma, 6*sigma, I, Ibkg)
-    objective_function = varbounds(all_bounds, loss_function.compare)
-    objective_function_weightless = varbounds(all_bounds, loss_function.compare_weightless)
-    
-    ans_d, ans_rho, ans_I, ans_Ibkg, loss, rel_losses1 = adamw(q, r, objective_function.objective_function, initial_sigma1, initial_sigma2,
-                                                                      initial_d, initial_rho, I, Ibkg, 
-                                                                      d_bounds, rho_bounds, I_bounds, Ibkg_bounds,
-                                                                      lr= 0.005, max_iter = 120, k=3)
-
-    objective_function_sigma = varsigma(ans_d, ans_rho, ans_I, ans_Ibkg, loss_function.compare, all_bounds)
-    
-    ans_sigma1, ans_sigma2 = de(func=objective_function_sigma.objective_function, bounds=bounds).x
-    
-    ans_d, ans_rho, ans_I, ans_Ibkg, loss, rel_losses2 = adamw(q, r, objective_function_weightless.objective_function, 
-                                                                      ans_sigma1, ans_sigma2,
-                                                                      ans_d, ans_rho, ans_I, ans_Ibkg, 
-                                                                      d_bounds, rho_bounds, I_bounds, Ibkg_bounds,
-                                                                      lr= 0.0008, max_iter = 60, k=2)
-
-    objective_function_weightless_sigma = varsigma(ans_d, ans_rho, ans_I, ans_Ibkg, loss_function.compare_weightless, all_bounds)
-    
-    ans_sigma1, ans_sigma2 = de(
-    func=objective_function_weightless_sigma.objective_function,
-    bounds=bounds).x
-
-    ans_d, ans_rho, ans_I, ans_Ibkg, loss, rel_losses3 = adamw(q, r, objective_function_weightless.objective_function, 
-                                                                      ans_sigma1, ans_sigma2,
-                                                                      ans_d, ans_rho, ans_I, ans_Ibkg, 
-                                                                      d_bounds, rho_bounds, I_bounds, Ibkg_bounds,
-                                                                      lr= 0.0005, max_iter = 200, k=2)
-    
-    rel_losses2 = list(map(lambda x: x * rel_losses1[-1],  rel_losses2))
-    rel_losses3 = list(map(lambda x: x * rel_losses2[-1],  rel_losses3))
-    rel_losses = rel_losses1 + rel_losses2 + rel_losses3
-
-    fig, ax = plt.subplots(figsize =(15, 4))
-
-    ax.plot(range(0,len(rel_losses)), rel_losses, label='AdamW')
-
-    ax.set_yscale('log')
-    ax.legend()
-    plt.show()
-
-    return ans_d, ans_rho, ans_I, ans_Ibkg, ans_sigma1, ans_sigma2
-"""
