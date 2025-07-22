@@ -7,9 +7,6 @@ Ndots :int = 200
 rough_res :int = 16
 kmax :int = 1.45e+9
 dq :int = 0.2e+8
-sigma = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
-sigma1  = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
-sigma2  = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 Ndots_norm :int = 11
 gap :int = 0.1
 Ndots_trace :int = 4
@@ -17,25 +14,21 @@ deltaq :float = 0.0
 Ibkg = torch.nn.Parameter(torch.tensor(1.1, dtype=torch.float64))
 
 
-
-data = np.loadtxt('experiment.txt')
+data = np.loadtxt('XRR.txt')
 
 r = data[0:, 1]
-r2 = data[:, 1] + data[:, 2]
-r1 = data[:, 1] - data[:, 2]
-sigma = sigma+0.0
+delta_r = 12*np.sqrt(data[0:, 1])
 Ibkg=Ibkg+0.0
-I0_plus = np.mean(r[r > 0.9*r1[0]][0:1+math.ceil(len(r[r > 0.9*r1[0]])*0.7)])
+I0_plus = np.mean(r[r > 0.9*r[0]][0:1+math.ceil(len(r[r > 0.9*r[0]])*0.7)])
 I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
 
 
 
 matr = read_complex_matrix('ref_matrix.txt')
 all_bounds = torch.tensor([
-    [[10.00, 10.00], [0.00, 0.00], [0.000, 0.000]],
-    [[500.0, 900.0], [80.00, 97.15],  [00.00, 350.00]],
-    [[0.000, 40.0], [7.0, 97.15], [0.00, 20.00]],
-    [[99.99, 100.0], [7.00, 9.20], [0.0, 99.99]]
+    [[100.00, 100.00], [0.00, 0.00], [0.000, 0.000]],
+    [[200.00, 600.00], [62.40, 66.41], [0.000, 120.0]],
+    [[20.0, 200.0], [17.070, 23.072], [0.0, 99.99]]
 ]).requires_grad_(True)
 
 valid_bounds = all_bounds[(all_bounds[..., 0] != all_bounds[..., 1])]
@@ -51,15 +44,18 @@ valid_matr = matr[(all_bounds[..., 0] != all_bounds[..., 1])].reshape(-1,3)
 initial_d = valid_matr[:, [0,2]].real.flatten()
 initial_r_rho = valid_matr[:, 1,].real.flatten()
 initial_i_rho = valid_matr[:, 1,].imag.flatten()
+initial_delta_q = torch.tensor(1e+2, requires_grad = True)
 
 i_rho_bounds = torch.cat((0.1*initial_i_rho.reshape(-1, 1), 1.9*initial_i_rho.reshape(-1, 1)), axis = 1)
 
 initial_sigma1 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 initial_sigma2 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
-I_bounds =  torch.tensor([0.997*I0 , 1.003*I0]).requires_grad_(True)
+I_bounds =  torch.tensor([0.97*I0 , 1.03*I0]).requires_grad_(True)
 Ibkg_bounds = torch.tensor([0.0, 3*Ibkg]).requires_grad_(True)
 
-sigma_bounds1 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
-sigma_bounds2 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
+sigma_bounds1 =  torch.tensor([0.01 , 0.01]).requires_grad_(False)
+sigma_bounds2 =  torch.tensor([0.01 , 0.01]).requires_grad_(False)
+
+delta_q_bounds = torch.tensor([-4.0e+7, 4.0e+7]).requires_grad_(True)
 
