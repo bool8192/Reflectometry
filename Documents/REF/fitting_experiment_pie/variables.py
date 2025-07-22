@@ -14,10 +14,11 @@ deltaq :float = 0.0
 Ibkg = torch.nn.Parameter(torch.tensor(1.1, dtype=torch.float64))
 
 
-data = np.loadtxt('XRR.txt')
+data = np.loadtxt('exp.txt')
 
 r = data[0:, 1]
 delta_r = 12*np.sqrt(data[0:, 1])
+delta_r = data[0:, 2]
 Ibkg=Ibkg+0.0
 I0_plus = np.mean(r[r > 0.9*r[0]][0:1+math.ceil(len(r[r > 0.9*r[0]])*0.7)])
 I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
@@ -27,8 +28,10 @@ I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
 matr = read_complex_matrix('ref_matrix.txt')
 all_bounds = torch.tensor([
     [[100.00, 100.00], [0.00, 0.00], [0.000, 0.000]],
-    [[200.00, 600.00], [62.40, 66.41], [0.000, 120.0]],
-    [[20.0, 200.0], [17.070, 23.072], [0.0, 99.99]]
+    [[000.0, 200.0], [20.00, 97.15], [00.00, 20.00]],
+    [[500.0, 900.0], [80.00, 97.15], [00.00, 350.00]],
+    [[0.000, 40.0], [7.0, 97.15], [0.00, 20.00]],
+    [[99.99, 100.0], [7.00, 9.20], [0.0, 99.99]]
 ]).requires_grad_(True)
 
 valid_bounds = all_bounds[(all_bounds[..., 0] != all_bounds[..., 1])]
