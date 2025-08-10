@@ -41,6 +41,7 @@ class Comparator:
         loss = torch.sum(squared)
     
         return loss
+    
 
 
 

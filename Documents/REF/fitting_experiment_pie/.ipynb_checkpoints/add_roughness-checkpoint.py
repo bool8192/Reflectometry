@@ -17,6 +17,7 @@ def transform_array(input_array, N):
         new_d = (rough2) / N
         k = torch.arange(0, N, device=device)
         new_ro = ((torch.erf(-4*k/N+2)+1)/2)*(ro2-ro1)+ro1
+        #new_ro = ((-k+N-0.5)/N)*(ro2-ro1)+ro1
         for j in range(0, N):
             result.insert(insert_index, torch.stack([new_d, new_ro[j]]))
             
