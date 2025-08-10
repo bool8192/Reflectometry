@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 def transform_array(input_array, N):
     device = input_array.device
     
-    initial_part = torch.cat(((input_array[:, 0] - input_array[:, 2]).unsqueeze(1), input_array[:, 1].real.unsqueeze(1)), dim=1)
+    initial_part = torch.cat(((input_array[:, 0] - input_array[:, 2]).unsqueeze(1), input_array[:, 1].unsqueeze(1)), dim=1)
     
     result = [initial_part[i] for i in range(len(initial_part))]
     
@@ -17,6 +17,7 @@ def transform_array(input_array, N):
         new_d = (rough2) / N
         k = torch.arange(0, N, device=device)
         new_ro = ((torch.erf(-4*k/N+2)+1)/2)*(ro2-ro1)+ro1
+        #new_ro = ((-k+N-0.5)/N)*(ro2-ro1)+ro1
         for j in range(0, N):
             result.insert(insert_index, torch.stack([new_d, new_ro[j]]))
             
@@ -24,22 +25,13 @@ def transform_array(input_array, N):
     return final_result
 
 
-
 def plot_density_profile(matrix):
     depth_bins = torch.cumsum((1e+10) * matrix[:, 0].real, dim=0)
     depth_bins = torch.cat((depth_bins, (depth_bins[-1] + (1e+10)*matrix[-1, 0].real).unsqueeze(0)), dim=0)
-
     U = (1e-14)*matrix[:, 1].real
     U = torch.cat((U, U[-1].unsqueeze(0)))
-
-    # Все тензорные операции выполняем до detach
     x_fill = torch.repeat_interleave(depth_bins[:-1], 2)
     y_fill = torch.repeat_interleave(U, 2)
-
-    x_fill = x_fill.detach().numpy()
-    y_fill = y_fill.detach().numpy()
-    depth_bins_np = depth_bins[:-1].detach().numpy()
-    U_np = U.detach().numpy()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -51,8 +43,8 @@ def plot_density_profile(matrix):
         showlegend=False
     ))
     fig.add_trace(go.Scatter(
-        x=depth_bins_np,
-        y=U_np,
+        x=depth_bins[:-1],
+        y=U,
         mode='lines',
         line=dict(color='darkgreen', shape='hv'),
         showlegend=False
@@ -61,7 +53,7 @@ def plot_density_profile(matrix):
     fig.update_layout(
         xaxis_title='Глубина, Å',
         yaxis_title='Плотность длины рассеяния, 10^-6 Å^2',
-        xaxis=dict(range=[0, float(depth_bins[-1].detach().numpy())]),
+        xaxis=dict(range=[0, depth_bins[-1]]),
         showlegend=False,
         plot_bgcolor='white'
     )

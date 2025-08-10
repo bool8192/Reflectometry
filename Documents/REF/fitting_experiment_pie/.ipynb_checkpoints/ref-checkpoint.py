@@ -16,8 +16,9 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg):
     #r: вектор всех значений коэффициента отражения
     #y: вектор всех значений коэффициента отражения со свёрткой
     """
+    # Загрузка и расчет базовых матриц
     r, r_real, r_img = calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap)
     
-    #r_conv = convolution(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg/var_I0
-
-    return r, r
+    r_conv = convolution(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg/var_I0
+    
+    return r, r_conv
