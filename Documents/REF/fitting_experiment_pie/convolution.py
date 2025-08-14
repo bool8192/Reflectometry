@@ -30,7 +30,7 @@ def convolution(r, qmax, q0, Ndots_norm, sigma1_param, sigma2_param, gapi):
     4. Гарантируется ограничение индексов в допустимых пределах
     """
     # Определение устройства выполнения (GPU/CPU)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device ='cpu'
     
     qmax = qmax if isinstance(qmax, torch.Tensor) else torch.tensor(qmax, device=device, dtype=torch.float32)
     

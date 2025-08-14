@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91aec707-e7f4-41f7-abcd-91b36978e99d" name="Changes" comment="" />
+    <list default="true" id="91aec707-e7f4-41f7-abcd-91b36978e99d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/convolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/convolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/read_complex_matrix.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/read_complex_matrix.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,15 +32,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "decfa6db",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dynamic__resolution&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

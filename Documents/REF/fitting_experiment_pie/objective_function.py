@@ -35,11 +35,41 @@ class Comparator:
     def compare_weightless(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
         r_conv1 = self.r
         r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
-        
+
         ratio = (r_conv1 - r_conv2)/r_conv1
         squared = ratio ** 2
         loss = torch.sum(squared)
     
+        return loss
+
+    def compare_08(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
+        r_conv1 = self.r
+        r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.6)
+        squared = ratio ** 2
+        loss = torch.sum(squared)
+
+        return loss
+
+    def compare_05(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
+        r_conv1 = self.r
+        r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.75)
+        squared = ratio ** 2
+        loss = torch.sum(squared)
+
+        return loss
+
+    def compare_025(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg):
+        r_conv1 = self.r
+        r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.875)
+        squared = ratio ** 2
+        loss = torch.sum(squared)
+
         return loss
     
 
@@ -59,7 +89,6 @@ class varbounds:
         flat_base0 = self.bounds[..., 0].flatten()
         flat_base = torch.complex(flat_base0, torch.zeros_like(flat_base0))
         result = flat_base.scatter(0, self.indices_flat, var_vector)
-        target_shape = self.bounds[..., 0].shape
         viewed_result = result.view_as(self.bounds[..., 0])
         final_result = self.loss(viewed_result, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
@@ -75,5 +104,5 @@ class varsigma:
         self.matrix = repair_matrix(all_bounds, torch.cat((d_vector.reshape(-1, 2), torch.complex(r_rho_vector, i_rho_vector).reshape(-1, 1)), dim = 1)[:, [0, 2, 1]].flatten())
 
     def objective_function(self, sigmas):
-         return self.loss(self.matrix, sigmas[0], sigmas[1], self.I, self.Ibkg).detach().numpy()
+         return self.loss(self.matrix, sigmas[0], sigmas[1], self.I, self.Ibkg).cpu().detach().numpy()
     

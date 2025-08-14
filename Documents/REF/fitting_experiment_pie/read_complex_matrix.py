@@ -1,6 +1,6 @@
 import torch
 def read_complex_matrix(filename):
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cpu'
     matrix = []
     with open(filename, 'r') as file:
         for line in file:

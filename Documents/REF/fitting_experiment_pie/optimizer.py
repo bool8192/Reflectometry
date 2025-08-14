@@ -33,14 +33,14 @@ def adamw(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_d, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)},
-        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)},
-        {'params': x_i_rho, 'lr': lr/20, 'weight_decay': 0, 'betas': (0.99, 0.998)},
+        {'params': x_d, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.98, 0.999)},
+        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': 0, 'betas': (0.98, 0.999)},
+        {'params': x_i_rho, 'lr': lr/20, 'weight_decay': 0, 'betas': (0.98, 0.999)},
         {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': 0, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.99, 0.998)}
+        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.98, 0.999)}
     ])
 
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.98)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.7)
     prev_loss = None
     rel_losses = []
 
