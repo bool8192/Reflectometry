@@ -49,7 +49,7 @@ all_bounds = torch.tensor([
     [[1.0, 90.0], [68.5038, 73.9996], [0, 0.01]],
     [[1.0, 90.0], [73.9996, 77.9919], [0, 0.01]],
     [[1.0, 90.0], [77.9919, 80.00], [0, 0.01]],
-    [[500.0, 900.0],[84.2, 92.950], [0, 0.01]],
+    [[500.0, 900.0], [84.2, 92.950], [0, 0.01]],
     [[0.1, 40.0], [80.575, 84.200], [0, 0.01]],
     [[0.1, 40.0], [75.95, 80.5750], [0, 0.01]],
     [[0.1, 40.0], [71.375, 75.950], [0, 0.01]],
@@ -89,8 +89,8 @@ i_rho_bounds = torch.cat((0.1*initial_i_rho.reshape(-1, 1), 1.9*initial_i_rho.re
 initial_sigma1 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 initial_sigma2 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
-I_bounds =  torch.tensor([0.997*I0 , 1.003*I0]).requires_grad_(True)
-Ibkg_bounds = torch.tensor([0.0, 3*Ibkg]).requires_grad_(True)
+I_bounds =  torch.tensor([0.997*I0.clone().detach() , 1.003*I0.clone().detach()]).requires_grad_(True)
+Ibkg_bounds = torch.tensor([0.0, 3*Ibkg.clone().detach()]).requires_grad_(True)
 
 sigma_bounds1 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
 sigma_bounds2 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
