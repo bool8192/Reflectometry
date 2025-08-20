@@ -82,6 +82,7 @@ class varbounds:
         self.mask = self.bounds[..., 0] != self.bounds[..., 1]
         flat_mask = self.mask.flatten()
         self.indices_flat = flat_mask.nonzero().squeeze()
+
         
     def objective_function(self, var_vector_d, var_vector_rho, var_sigma1, var_sigma2, var_I0, var_Ibkg):
         var_vector = torch.cat((var_vector_d.reshape(-1, 2), var_vector_rho.reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()

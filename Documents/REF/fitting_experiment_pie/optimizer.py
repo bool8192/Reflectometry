@@ -1,9 +1,5 @@
-import torch
 import torch.optim as optim
-import matplotlib.pyplot as plt
 from variables import *
-from ref import reflectometry
-from scipy.optimize import differential_evolution as de
 from objective_function import *
 
 def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I):
@@ -20,7 +16,10 @@ def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I):
     
 def adamw(q, r, func,
           sigma1, sigma2, 
-          initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg, d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, max_iter, k, lr=1.2, tol=1e-18):
+          initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg,
+          d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds,
+          betas = (0.99, 0.999), gamma = 0.9, wd = 0,
+          max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
 
     x_d = initial_d.clone().detach().requires_grad_(True)
@@ -33,14 +32,14 @@ def adamw(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_d, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.995, 0.9998)},
-        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': 0, 'betas': (0.995, 0.9998)},
-        {'params': x_i_rho, 'lr': lr/20, 'weight_decay': 0, 'betas': (0.995, 0.9998)},
-        {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': 0, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': 0, 'betas': (0.995, 0.9998)}
+        {'params': x_d, 'lr': 20*lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_i_rho, 'lr': lr/20, 'weight_decay': wd, 'betas': betas},
+        {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
+        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': wd, 'betas': betas}
     ])
 
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.7)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=gamma)
     prev_loss = None
     rel_losses = []
 
@@ -48,7 +47,6 @@ def adamw(q, r, func,
         return func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)
 
     initial_loss_value = func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
-    #print(x_r_rho, x_i_rho)
 
     trim_idx = slice(None, -1)  # =[:-1]
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
@@ -70,7 +68,6 @@ def adamw(q, r, func,
                 corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
                 x_r_rho.grad[trim_idx] = corrected_grad_r_rho
             
-            
             optimizer.step()
 
             with torch.no_grad():
@@ -86,7 +83,7 @@ def adamw(q, r, func,
 
             rel_losses.append((current_loss / initial_loss_value).item())
 
-            if i % int((max_iter - 1) / k) == 0:
+            if i % int((max_iter - 1) / k) == -0.6:
                 combined_x_for_print = torch.cat((x_d.reshape(-1, 2), torch.complex(x_r_rho, x_i_rho).reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()
 
                 """
@@ -124,4 +121,3 @@ def adamw(q, r, func,
         prev_loss = current_loss.item()
 
     return x_d.detach(), x_r_rho.detach(),  x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), current_loss.item(), rel_losses
-

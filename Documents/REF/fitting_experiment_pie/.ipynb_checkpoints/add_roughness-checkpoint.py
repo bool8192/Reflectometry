@@ -25,26 +25,38 @@ def transform_array(input_array, N):
     return final_result
 
 
-def plot_density_profile(matrix):
-    depth_bins = torch.cumsum((1e+10) * matrix[:, 0].real, dim=0)
-    depth_bins = torch.cat((depth_bins, (depth_bins[-1] + (1e+10)*matrix[-1, 0].real).unsqueeze(0)), dim=0)
-    U = (1e-14)*matrix[:, 1].real
+def plot_density_profile(matr):
+    matrix = matr.clone()
+    matrix = torch.cat((matr[0:-1, 0].reshape(-1,1), matrix[1:matrix.shape[0], 1:3]), axis=1)
+    
+    depth_bins = torch.cumsum((1.e+0) * matrix[:, 0].real, dim=0)
+    depth_bins = torch.cat(
+        (depth_bins, (depth_bins[-1] + (1.e+0) * matrix[-1, 0].real).unsqueeze(0)),
+        dim=0
+    )
+    U = (1.e-0) * matrix[:, 1].real
     U = torch.cat((U, U[-1].unsqueeze(0)))
+
     x_fill = torch.repeat_interleave(depth_bins[:-1], 2)
     y_fill = torch.repeat_interleave(U, 2)
 
+    depth_bins_np = depth_bins.detach().cpu().numpy()
+    U_np = U.detach().cpu().numpy()
+    x_fill_np = x_fill.detach().cpu().numpy()
+    y_fill_np = y_fill.detach().cpu().numpy()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=x_fill,
-        y=y_fill,
+        x=x_fill_np,
+        y=y_fill_np,
         fill='tozeroy',
         mode='none',
         fillcolor='rgba(1,50,32,0.15)',
         showlegend=False
     ))
     fig.add_trace(go.Scatter(
-        x=depth_bins[:-1],
-        y=U,
+        x=depth_bins_np[:-1],
+        y=U_np,
         mode='lines',
         line=dict(color='darkgreen', shape='hv'),
         showlegend=False
@@ -53,7 +65,7 @@ def plot_density_profile(matrix):
     fig.update_layout(
         xaxis_title='Глубина, Å',
         yaxis_title='Плотность длины рассеяния, 10^-6 Å^2',
-        xaxis=dict(range=[0, depth_bins[-1]]),
+        xaxis=dict(range=[0, float(depth_bins_np[-1])]),
         showlegend=False,
         plot_bgcolor='white'
     )

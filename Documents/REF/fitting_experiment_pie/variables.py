@@ -20,12 +20,12 @@ Ibkg = torch.nn.Parameter(torch.tensor(1.1, dtype=torch.float64))
 
 data = np.loadtxt('experiment.txt')
 
-r = data[0:, 1]
+r0 = data[0:, 1]
 r2 = data[:, 1] + data[:, 2]
 r1 = data[:, 1] - data[:, 2]
 sigma = sigma+0.0
 Ibkg=Ibkg+0.0
-I0_plus = np.mean(r[r > 0.9*r1[0]][0:1+math.ceil(len(r[r > 0.9*r1[0]])*0.7)])
+I0_plus = np.mean(r0[r0 > 0.9*r1[0]][0:1+math.ceil(len(r0[r0 > 0.9*r1[0]])*0.7)])
 I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
 
 
@@ -48,7 +48,7 @@ all_bounds = torch.tensor([
     [[1.0, 90.0], [63.009, 68.5038], [0, 0.01]],
     [[1.0, 90.0], [68.5038, 73.9996], [0, 0.01]],
     [[1.0, 90.0], [73.9996, 77.9919], [0, 0.01]],
-    [[1.0, 90.0], [77.9919, 80.00], [0, 0.01]],
+    [[1.0, 90.0], [77.9919, 84.20], [0, 0.01]],
     [[500.0, 900.0], [84.2, 92.950], [0, 0.01]],
     [[0.1, 40.0], [80.575, 84.200], [0, 0.01]],
     [[0.1, 40.0], [75.95, 80.5750], [0, 0.01]],
