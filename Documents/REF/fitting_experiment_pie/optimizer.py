@@ -32,11 +32,11 @@ def adamw(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_d, 'lr': 20*lr, 'weight_decay': wd, 'betas': betas},
-        {'params': x_r_rho, 'lr': 10*lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_d, 'lr': 2*lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_r_rho, 'lr': 1*lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20, 'weight_decay': wd, 'betas': betas},
-        {'params': x_I, 'lr': 1.0e+13*lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 20*lr, 'weight_decay': wd, 'betas': betas}
+        {'params': x_I, 'lr': 1.0e+3*lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
+        {'params': x_Ibkg, 'lr': 2*lr, 'weight_decay': wd, 'betas': betas}
     ])
 
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=gamma)
@@ -53,23 +53,35 @@ def adamw(q, r, func,
 
     for i in range(max_iter):
         optimizer.zero_grad(set_to_none=True)
-
         try:
             with torch.enable_grad():
                 current_loss = current_loss_fn_wrapper()
+            #print(i, "    ", torch.isnan(x_d.data).any(), "  Max gradient norm: ", torch.norm(x_d.grad, p=float('inf')))
 
             current_loss.backward()
+            torch.nn.utils.clip_grad_norm_(x_d, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_r_rho, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_i_rho, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_I, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_Ibkg, max_norm=1.0)
+
             # Ручная коррекция градиентов для поддержания tg_x_rho
-            
             with torch.no_grad():
                 grad_r_rho_trimmed = x_r_rho.grad[trim_idx]
                 grad_i_rho_trimmed = x_i_rho.grad[trim_idx]
 
                 corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
                 x_r_rho.grad[trim_idx] = corrected_grad_r_rho
-            
-            optimizer.step()
+            #print(i, "    ", torch.isnan(x_d.data).any(), "  Max gradient norm: ", torch.norm(x_d.grad, p=float('inf')))
+            if torch.isnan(x_d.grad).any():
+                with torch.autograd.profiler.profile(use_cuda=False) as prof:
+                    outputs = func(x_d, torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)  # Прямой проход
+                    outputs.backward()  # Обратный проход
 
+                # Печать таблицы с результатами профайлинга
+                print(prof.key_averages().table(sort_by="self_cpu_time_total"))
+            optimizer.step()
+            #print(i, "    ", torch.isnan(x_d.data).any(), "  Max gradient norm: ", torch.norm(x_d.grad, p=float('inf')))
             with torch.no_grad():
                 x_d.data = torch.clamp(x_d.data, d_bounds[:,0], d_bounds[:,1])
                 x_r_rho.data = torch.clamp(x_r_rho.data, r_rho_bounds[:, 0], r_rho_bounds[:, 1])
@@ -78,7 +90,6 @@ def adamw(q, r, func,
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
 
                 x_i_rho.data[trim_idx] = x_r_rho.data[trim_idx]*tg_x_rho
-
             scheduler.step()
 
             rel_losses.append((current_loss / initial_loss_value).item())
@@ -86,19 +97,6 @@ def adamw(q, r, func,
             if i % int((max_iter - 1) / k) == -0.6:
                 combined_x_for_print = torch.cat((x_d.reshape(-1, 2), torch.complex(x_r_rho, x_i_rho).reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()
 
-                """
-                print("relative_loss:  ", (current_loss / initial_loss_value).item(), "\n",
-                      "d:  ", x_d.detach(), "   ",
-                      "grad_d:  ", x_d.grad, "\n",
-                      "rho:  ", torch.complex(x_r_rho.detach(), x_i_rho.detach()), "   ",
-                      "grad_rho:  ", torch.complex(x_r_rho.grad, x_i_rho.grad), "\n",
-                      "I:  ", x_I.detach(), "   ",
-                      "grad_I:  ", x_I.grad, "\n",
-                      "Ibkg:  ", x_Ibkg.detach(), "   ",
-                      "grad_Ibkg:  ", x_Ibkg.grad, "\n",
-                      "learning_rate:  ", optimizer.param_groups[0]['lr'],  "\n",
-                      "iteration:  ", i + 1,  "\n")
-                """
                 print("relative_loss:  ", (current_loss / initial_loss_value).item(), "\n")
                 twin_plotter(repair_matrix(all_bounds, combined_x_for_print), q, r, sigma1, sigma2, initial_I, x_Ibkg, x_I)
 

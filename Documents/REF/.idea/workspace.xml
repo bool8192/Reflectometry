@@ -5,20 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/REF.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/REF.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/add_roughness-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/add_roughness-checkpoint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/fitting-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/objective_function-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/.ipynb_checkpoints/objective_function-checkpoint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +44,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "dynamic__resolution",
-    "settings.editor.selected.configurable": "advanced.settings"
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
   <component name="SharedIndexes">
@@ -79,7 +69,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fitting_experiment_pie/optimizer.py</url>
-          <option name="timeStamp" value="1" />
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
