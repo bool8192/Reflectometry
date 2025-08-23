@@ -6,9 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
