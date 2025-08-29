@@ -7,12 +7,11 @@
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/objective_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/fitting.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,35 +21,36 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "bool8192"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;bool8192&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/bool8192/Reflectometry",
-    "accountId": "aecfe0fd-3f59-466a-a423-4af0c75c5058"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/bool8192/Reflectometry&quot;,
+    &quot;accountId&quot;: &quot;aecfe0fd-3f59-466a-a423-4af0c75c5058&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="31QHl6DLYoJAuw9EiAPULzQ9BSZ" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dynamic__resolution",
-    "settings.editor.selected.configurable": "preferences.keymap"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dynamic__resolution&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

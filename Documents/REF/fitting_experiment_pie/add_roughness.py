@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 def transform_array(input_array, N):
     device = input_array.device
     
-    initial_part = torch.cat(((input_array[:, 0] + 200*input_array[:, 2]).unsqueeze(1), input_array[:, 1].unsqueeze(1)), dim=1)
+    initial_part = torch.cat(((input_array[:, 0]).unsqueeze(1), input_array[:, 1].unsqueeze(1)), dim=1)
     
     result = [initial_part[i] for i in range(len(initial_part))]
     

@@ -18,11 +18,13 @@ Ibkg = torch.nn.Parameter(torch.tensor(1.1, dtype=torch.float64))
 
 
 
-data = np.loadtxt('experiment.txt')
+data = np.loadtxt('XRR.txt')
 
 r0 = data[0:, 1]
-r2 = data[:, 1] + data[:, 2]
-r1 = data[:, 1] - data[:, 2]
+#r2 = data[:, 1] + data[:, 2]
+#r1 = data[:, 1] - data[:, 2]
+r2 = data[0:, 1] + 1.0
+r1 = data[0:, 1] - 1.0
 sigma = sigma+0.0
 Ibkg=Ibkg+0.0
 I0_plus = np.mean(r0[r0 > 0.9*r1[0]][0:1+math.ceil(len(r0[r0 > 0.9*r1[0]])*0.7)])
