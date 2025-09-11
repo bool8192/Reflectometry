@@ -6,12 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/add_roughness.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/optimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/ref_matrix.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_pie/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/objective_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/fitting-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/add_roughness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hompertz/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/objective_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/optimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/variables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +50,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.variables.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;dynamic__resolution&quot;,
@@ -68,12 +75,27 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fitting_experiment_pie/optimizer.py</url>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py</url>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

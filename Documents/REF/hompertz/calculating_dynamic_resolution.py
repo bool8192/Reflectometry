@@ -90,7 +90,7 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     device = 'cpu'
 
     scaling_factors = torch.tensor(
-    [1e-10, 1e+14, 1e-10, 1e-10],
+    [1e-10, 1e+14, 1e-10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
     device=matr.device,         
     dtype=matr.dtype            
     )
@@ -157,9 +157,9 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     
     # Вычисление коэффициента отражения
     r = M[:, 1, 0] / M[:, 0, 0]
-    real = torch.nan_to_num(r.real, nan=0.0, posinf=0.0, neginf=0.0)
-    imag = torch.nan_to_num(r.imag, nan=0.0, posinf=0.0, neginf=0.0)
-    r = torch.complex(real, imag)
+    #real = torch.nan_to_num(r.real, nan=0.0, posinf=0.0, neginf=0.0)
+    #imag = torch.nan_to_num(r.imag, nan=0.0, posinf=0.0, neginf=0.0)
+    r = torch.complex(r.real, r.imag)
     
     # Расчет результатов
     r_abs = torch.abs(r).pow(2)

@@ -4,7 +4,7 @@ import math
 from read_complex_matrix import read_complex_matrix
 
 Ndots :int = 200
-rough_res :int = 16
+rough_res :int = 32
 kmax :int = 1.45e+9
 dq :int = 0.2e+8
 sigma = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
@@ -32,9 +32,9 @@ I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
 
 matr = read_complex_matrix('ref_matrix.txt')
 all_bounds = torch.tensor([
-    [[10.0, 10.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-    [[500.0, 900.0], [84.2, 92.950], [-4, -0.25], [-0.9, -0.1]],
-    [[99.9, 100.0], [7.00, 9.200], [-4, -0.25], [-0.9, -0.1]],
+    [[10.0, 10.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+    [[100.0, 900.0], [84.2, 92.950], [0, 300], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0]],
+    [[399.9, 400.0], [7.00, 9.200], [0, 300], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0]]
 
 ]).requires_grad_(True)
 
@@ -42,15 +42,15 @@ valid_bounds = all_bounds[(all_bounds[..., 0] != all_bounds[..., 1])]
 mask_d = []
 mask_rho = []
 for i in range(len(valid_bounds)):
-    if i%4 == 1: mask_rho.append(i)
+    if i%9 == 1: mask_rho.append(i)
     else: mask_d.append(i)
 r_rho_bounds = valid_bounds[mask_rho]
 d_bounds = valid_bounds[mask_d]
 
-valid_matr = matr[(all_bounds[..., 0] != all_bounds[..., 1])].reshape(-1,4)
-initial_d = valid_matr[:, [0,2,3]].real.flatten()
-initial_r_rho = valid_matr[:, 1,].real.flatten()
-initial_i_rho = valid_matr[:, 1,].imag.flatten()
+valid_matr = matr[(all_bounds[..., 0] != all_bounds[..., 1])].reshape(-1,9)
+initial_d = valid_matr[:, [0,2,3,4,5,6,7,8]].real.flatten()
+initial_r_rho = valid_matr[:, 1].real.flatten()
+initial_i_rho = valid_matr[:, 1].imag.flatten()
 
 i_rho_bounds = torch.cat((0.1*initial_i_rho.reshape(-1, 1), 1.9*initial_i_rho.reshape(-1, 1)), axis = 1)
 

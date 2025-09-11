@@ -71,7 +71,6 @@ class Comparator:
         loss = torch.sum(squared)
 
         return loss
-    
 
 
 
@@ -85,7 +84,7 @@ class varbounds:
 
         
     def objective_function(self, var_vector_d, var_vector_rho, var_sigma1, var_sigma2, var_I0, var_Ibkg):
-        var_vector = torch.cat((var_vector_d.reshape(-1, 3), var_vector_rho.reshape(-1, 1)), dim=1)[:,torch.tensor([0, 3, 1, 2])].flatten()
+        var_vector = torch.cat((var_vector_d.reshape(-1, 8), var_vector_rho.reshape(-1, 1)), dim=1)[:,torch.tensor([0, 8, 1, 2, 3, 4, 5, 6, 7])].flatten()
         
         flat_base0 = self.bounds[..., 0].flatten()
         flat_base = torch.complex(flat_base0, torch.zeros_like(flat_base0))
@@ -102,7 +101,7 @@ class varsigma:
         self.I = I
         self.Ibkg = Ibkg
         self.loss = loss_func
-        self.matrix = repair_matrix(all_bounds, torch.cat((d_vector.reshape(-1, 3), torch.complex(r_rho_vector, i_rho_vector).reshape(-1, 1)), dim = 1)[:, [0, 3, 1, 2]].flatten())
+        self.matrix = repair_matrix(all_bounds, torch.cat((d_vector.reshape(-1, 8), torch.complex(r_rho_vector, i_rho_vector).reshape(-1, 1)), dim = 1)[:, [0, 8, 1, 2, 3, 4, 5, 6, 7]].flatten())
 
     def objective_function(self, sigmas):
          return self.loss(self.matrix, sigmas[0], sigmas[1], self.I, self.Ibkg).cpu().detach().numpy()

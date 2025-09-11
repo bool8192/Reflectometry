@@ -76,12 +76,15 @@ class Comparator:
 
 
 class varbounds:
-    def __init__(self, bounds_tensor, loss_func):
+    def __init__(self, bounds_tensor, loss_func, norm_coef, matrix, sigma1, sigma2, I0, Ibkg):
         self.loss = loss_func
         self.bounds = bounds_tensor
         self.mask = self.bounds[..., 0] != self.bounds[..., 1]
         flat_mask = self.mask.flatten()
         self.indices_flat = flat_mask.nonzero().squeeze()
+        with torch.no_grad():
+            self.coef_normalization = norm_coef*loss_func(matrix, sigma1, sigma2, I0, Ibkg)/torch.sum(torch.abs((matrix[0:-6, 1] + matrix[6:, 1] - 2 * matrix[3:-3, 1]) / pow((matrix[0:-6, 0] + matrix[6:, 0]), 2)))
+
 
         
     def objective_function(self, var_vector_d, var_vector_rho, var_sigma1, var_sigma2, var_I0, var_Ibkg):
@@ -91,7 +94,12 @@ class varbounds:
         flat_base = torch.complex(flat_base0, torch.zeros_like(flat_base0))
         result = flat_base.scatter(0, self.indices_flat, var_vector)
         viewed_result = result.view_as(self.bounds[..., 0])
+
         final_result = self.loss(viewed_result, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+
+        normalization = self.coef_normalization*torch.sum(torch.abs((viewed_result[0:-6, 1] + viewed_result[6:, 1] - 2 * viewed_result[3:-3, 1]) / pow((viewed_result[0:-6, 0] + viewed_result[6:, 0]), 2)))
+
+        final_result = final_result+normalization
 
         return final_result
 

@@ -94,11 +94,11 @@ def adamw(q, r, func,
 
             rel_losses.append((current_loss / initial_loss_value).item())
 
-            if i % int((max_iter - 1) / k) == -0.6:
-                combined_x_for_print = torch.cat((x_d.reshape(-1, 2), torch.complex(x_r_rho, x_i_rho).reshape(-1, 1)), dim=1)[:,torch.tensor([0, 2, 1])].flatten()
+            if i % int((max_iter - 1) / k) == 0:
+                combined_x_for_print = torch.cat((x_d.reshape(-1, 8), torch.complex(x_r_rho, x_i_rho).reshape(-1, 1)), dim=1)[:,torch.tensor([0, 8, 1,2,3,4,5,6,7])].flatten()
 
-                print("relative_loss:  ", (current_loss / initial_loss_value).item(), "\n")
-                twin_plotter(repair_matrix(all_bounds, combined_x_for_print), q, r, sigma1, sigma2, initial_I, x_Ibkg, x_I)
+                #print("relative_loss:  ", (current_loss / initial_loss_value).item(), "\n")
+                #twin_plotter(repair_matrix(all_bounds, combined_x_for_print), q, r*initial_I, sigma1, sigma2, initial_I, x_Ibkg, x_I)
 
         except RuntimeError as e:
             print(f"Ошибка на итерации {i}: {str(e)}")
