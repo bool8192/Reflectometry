@@ -6,18 +6,68 @@
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/Reflectometry+-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/XRR-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/add_roughness-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/calculating_dynamic_resolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/convolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/experiment-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/objective_function-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/optimizer-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/plotting-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/preprocessing-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/read_complex_matrix-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/ref-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/ref_matrix-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/transcribe-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/.ipynb_checkpoints/variables-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/XRR.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/add_roughness.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/calculating_dynamic_resolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/convolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/exp.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/experiment.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/fitting.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/objective_function.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/optimizer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/plotting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/read_complex_matrix.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/ref.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/ref_matrix.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/erf+alphax/variables.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/objective_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting_experiment_freeform/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/fitting_experiment_freeform/variables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/fitting-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/add_roughness.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/calculating_dynamic_resolution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/objective_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/optimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/ref_matrix.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hompertz/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/hompertz/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/Reflectometry+-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/Reflectometry+-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/XRR-checkpoint.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/XRR-checkpoint.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/add_roughness-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/add_roughness-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/calculating_dynamic_resolution-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/calculating_dynamic_resolution-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/convolution-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/convolution-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/experiment-checkpoint.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/experiment-checkpoint.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/fitting-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/objective_function-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/objective_function-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/optimizer-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/optimizer-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/plotting-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/plotting-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/preprocessing-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/preprocessing-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/read_complex_matrix-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/read_complex_matrix-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/ref-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/ref-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/ref_matrix-checkpoint.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/ref_matrix-checkpoint.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/transcribe-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/transcribe-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/.ipynb_checkpoints/variables-checkpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/variables-checkpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/XRR.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/XRR.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/add_roughness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/calculating_dynamic_resolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/convolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/convolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/exp.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/exp.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/experiment.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/experiment.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/objective_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/optimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/plotting.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/read_complex_matrix.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/read_complex_matrix.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/ref.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/ref.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hompertz/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein_x6/variables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,6 +146,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fitting_experiment_freeform/optimizer.py</url>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bernstein_x6/optimizer.py</url>
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
