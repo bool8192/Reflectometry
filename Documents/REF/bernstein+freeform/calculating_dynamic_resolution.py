@@ -90,14 +90,12 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     device = 'cpu'
 
     scaling_factors = torch.tensor(
-    [1e-10, 1e+14, 1e-10],
+    [1e-10, 1e+14, 1e-10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
     device=matr.device,         
     dtype=matr.dtype            
     )
-
     matrix_tensor = matr * scaling_factors
-    #print(matrix_tensor)
-    
+
     transformed = transform_array(matrix_tensor, rough_res).to(device)
     
     ro = transformed[:, 1]
@@ -143,7 +141,7 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     
     # Вычисление обратных матриц
     dmi = torch.linalg.inv(dm)
-    
+
     # Векторизованное умножение матриц
     if len(ro) == 2:
         M = torch.einsum('nij,njk->nik', dmi[0], dm[1])
@@ -157,13 +155,95 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     
     # Вычисление коэффициента отражения
     r = M[:, 1, 0] / M[:, 0, 0]
-    real = torch.nan_to_num(r.real, nan=0.0, posinf=0.0, neginf=0.0)
-    imag = torch.nan_to_num(r.imag, nan=0.0, posinf=0.0, neginf=0.0)
-    r = torch.complex(real, imag)
+    #real = torch.nan_to_num(r.real, nan=0.0, posinf=0.0, neginf=0.0)
+    #imag = torch.nan_to_num(r.imag, nan=0.0, posinf=0.0, neginf=0.0)
+    r = torch.complex(r.real, r.imag)
     
     # Расчет результатов
     r_abs = torch.abs(r).pow(2)
     r_real = r.real
     r_img = r.imag
     
+    return r_abs, r_real, r_img
+
+
+def calculate_matrices_and_reflection_freeform(matr, rough_res, kmax, q, Ndots, gap):
+
+    device = 'cpu'
+
+    scaling_factors = torch.tensor(
+        [1e-10, 1e+14, 1e-10],
+        device=matr.device,
+        dtype=matr.dtype
+    )
+
+    transformed = matr * scaling_factors
+    # print(matrix_tensor)
+
+    ro = transformed[:, 1]
+    d = transformed[:, 0]
+
+    q0 = q * 0.5
+    Ndots = q0.numel()
+
+    # Инициализация матриц
+    Pe = torch.eye(2, dtype=torch.complex128, device=device)
+
+    dm = torch.zeros((len(ro), Ndots, 2, 2), dtype=torch.complex128, device=device)
+    pm = torch.zeros_like(dm)
+    M = torch.zeros((Ndots, 2, 2), dtype=torch.complex128, device=device)
+
+    # Создание сеток индексов
+    j_indices = torch.arange(len(ro), device=device)
+    i_indices = torch.arange(Ndots, device=device)
+
+    j_grid, i_grid = torch.meshgrid(j_indices, i_indices, indexing='ij')
+    q0_expanded = q0[i_grid]
+
+    # Вычисление q_values с обработкой комплексных чисел
+    ro_expanded = ro[j_grid.long()]
+    under_sqrt = (q0_expanded.to(torch.complex128)) ** 2 - 12.56637 * ro_expanded
+    q_values = torch.sqrt(under_sqrt)
+
+    # Заполнение матрицы dm
+    dm[..., 0, 0] = 1.0
+    dm[..., 0, 1] = 1.0
+    dm[..., 1, 0] = q_values
+    dm[..., 1, 1] = -q_values
+
+    # Фазовые вычисления
+    d_expanded = d[j_grid.long()]
+    phase = q_values * d_expanded
+    exp_neg = torch.exp(-1j * phase)
+    exp_pos = torch.exp(1j * phase)
+
+    # Заполнение фазовой матрицы pm
+    pm[..., 0, 0] = exp_neg
+    pm[..., 1, 1] = exp_pos
+
+    # Вычисление обратных матриц
+    dmi = torch.linalg.inv(dm)
+
+    # Векторизованное умножение матриц
+    if len(ro) == 2:
+        M = torch.einsum('nij,njk->nik', dmi[0], dm[1])
+    elif len(ro) == 3:
+        M = torch.einsum('nij,njk,nkl,nlm->nim', dmi[0], dm[1], pm[1], dmi[1], dm[2])
+    else:
+        Pe = torch.eye(2, dtype=torch.complex128, device=device).repeat(Ndots, 1, 1)
+        for j in range(1, len(ro) - 1):
+            Pe = torch.einsum('nij,njk,nkl->nil', dm[j], pm[j], dmi[j]) @ Pe
+        M = dmi[0] @ Pe @ dm[-1]
+
+    # Вычисление коэффициента отражения
+    r = M[:, 1, 0] / M[:, 0, 0]
+    real = torch.nan_to_num(r.real, nan=0.0, posinf=0.0, neginf=0.0)
+    imag = torch.nan_to_num(r.imag, nan=0.0, posinf=0.0, neginf=0.0)
+    r = torch.complex(real, imag)
+
+    # Расчет результатов
+    r_abs = torch.abs(r).pow(2)
+    r_real = r.real
+    r_img = r.imag
+
     return r_abs, r_real, r_img

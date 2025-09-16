@@ -5,7 +5,7 @@ from add_roughness import transform_array
 
 
 def resolution_function_smooth_step(qmax, q, sigma1, sigma2, gap):
-  device = 'cpu'
+  device = 'cuda' if torch.cuda.is_available() else 'cpu'
   qmax = qmax/2
   if gap != 0:
       if q > (0.5+gap/2)*qmax: 
@@ -37,7 +37,7 @@ def dynamic_mesh_q(kmax, Ndots, gap):
     torch.Tensor
         Массив q0
     """
-    device = 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     q0 = [kmax/Ndots]
     while q0[-1] < kmax*0.5:
         if (5.9*q0[-1]*resolution_function_smooth_step(kmax, q0[-1], sigma1, sigma2, gap)/Ndots_norm) > kmax/Ndots:
@@ -87,10 +87,10 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     5. Вычисление коэффициентов отражения из результирующей матрицы
     """    
 
-    device = 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'    
 
     scaling_factors = torch.tensor(
-    [1e-10, 1e+14, 1e-10],
+    [1e-10, 1e+14, 1e-10],          
     device=matr.device,         
     dtype=matr.dtype            
     )
