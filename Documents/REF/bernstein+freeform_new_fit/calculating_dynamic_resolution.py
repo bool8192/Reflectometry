@@ -132,7 +132,6 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
         while len(M_list) > 1:
             if len(M_list) % 2 == 1:
                 M_list.append(I)
-            # умножаем пары: результат будет список новых батч-матриц
             M_list = [torch.matmul(M_list[i + 1], M_list[i]) for i in range(0, len(M_list), 2)]
 
         Mtot = M_list[0]  # shape (npnts,2,2)

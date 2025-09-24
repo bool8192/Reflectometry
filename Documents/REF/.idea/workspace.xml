@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/sandbox_ref.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/calculating_dynamic_resolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/fitting.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
