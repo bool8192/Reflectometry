@@ -6,8 +6,76 @@
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform — копия/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform — копия/add_roughness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform — копия/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform — копия/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform — копия/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform — копия/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform — копия/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform — копия/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/Reflectometry+-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/XRR-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/add_roughness-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/calculating_dynamic_resolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/convolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/experiment-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/objective_function-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/optimizer-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/plotting-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/preprocessing-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/read_complex_matrix-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/ref-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/ref_matrix-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/transcribe-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/.ipynb_checkpoints/variables-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/XRR.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/add_roughness.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/calculating_dynamic_resolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/convolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/exp.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/experiment.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/fitting.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/objective_function.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/optimizer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/plotting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/read_complex_matrix.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/ref.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/ref_matrix.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform/variables.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/add_roughness.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/fitting.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/objective_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/ref_matrix.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein+freeform_new_fit/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/bernstein+freeform_new_fit/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/Reflectometry+-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/XRR-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/add_roughness-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/calculating_dynamic_resolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/convolution-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/experiment-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/fitting-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/objective_function-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/optimizer-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/plotting-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/preprocessing-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/read_complex_matrix-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/ref-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/ref_matrix-checkpoint.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/transcribe-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/.ipynb_checkpoints/variables-checkpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/XRR.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/add_roughness.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/calculating_dynamic_resolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/convolution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/exp.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/experiment.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/fitting.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/objective_function.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/optimizer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/plotting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/read_complex_matrix.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/ref.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/ref_matrix.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bernstein_x6/variables.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,18 +112,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.calculating_dynamic_resolution.executor": "Run",
-    "Python.variables.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dynamic__resolution",
-    "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "preferences.keymap"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.calculating_dynamic_resolution.executor&quot;: &quot;Run&quot;,
+    &quot;Python.variables.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dynamic__resolution&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
