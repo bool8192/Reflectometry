@@ -38,6 +38,7 @@ def linear_interpolate_tensor(tensor1, tensor2, num_steps):
 
 
 def comb_transformer(matr):
+    """""
     #first_gap = matr[3:5, :].unsqueeze(0).repeat(12, 1, 1).view(-1, 9)
     first_gap = linear_interpolate_tensor(matr[3:5, :], matr[5:7, :], 12).view(-1, 9)
 
@@ -52,6 +53,14 @@ def comb_transformer(matr):
         matr[8:10, :],  # (2, 9)
         second_gap,
         matr[-1, :].unsqueeze(0)  # (1, 9)
+    ], dim=0)
+    """""
+    gap = linear_interpolate_tensor(matr[3:5, :], matr[5:7, :], 89).view(-1, 9)
+
+    comb = torch.cat([
+        matr[0:3, :],
+        gap,
+        matr[-1, :].unsqueeze(0)
     ], dim=0)
 
     return comb
