@@ -90,7 +90,7 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     device = 'cpu'
 
     scaling_factors = torch.tensor(
-    [1e-10, 1e+14, 1e-10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    [1e-10, 1e+14, 1e-10, 1.0, 1.0, 1.0],
     device=matr.device,
     dtype=matr.dtype
     )

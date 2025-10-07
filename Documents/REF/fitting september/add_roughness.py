@@ -18,7 +18,7 @@ def transform_array(input_array, N):
     all_parts = [initial_part[0].unsqueeze(0)]
 
     for i in range(1, len(input_array)):
-        d2, ro2, rough2, v1, v2, v3, v4, v5, v6 = input_array[i]
+        d2, ro2, rough2, v1, v2, v3 = input_array[i]
         ro1 = input_array[i - 1][1]
         new_d = rough2 / N
         u = torch.linspace(0.0, 1.0, N, device=device)
@@ -27,7 +27,7 @@ def transform_array(input_array, N):
         zero = torch.tensor(0.0, dtype=u.dtype, device=u.device)
         one = torch.tensor(1.0, dtype=u.dtype, device=u.device)
 
-        coeffs = torch.stack([zero, v1, v2, v3, v4, v5, v6, one])
+        coeffs = torch.stack([zero, v1, v2, v3, one])
 
         k_tensor = torch.arange(len(coeffs), dtype=u.dtype, device=u.device)
 

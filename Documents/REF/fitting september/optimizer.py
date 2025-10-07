@@ -26,8 +26,8 @@ def adamw(q, r, func,
           max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
 
-    x_de = initial_d.reshape(-1, 8)[:, 0:2].flatten().clone().detach().requires_grad_(True)
-    x_be = initial_d.reshape(-1, 8)[:, 2:].flatten().clone().detach().requires_grad_(True)
+    x_de = initial_d.reshape(-1, 5)[:, 0:2].flatten().clone().detach().requires_grad_(True)
+    x_be = initial_d.reshape(-1, 5)[:, 2:].flatten().clone().detach().requires_grad_(True)
     x_r_rho = initial_r_rho.clone().detach().requires_grad_(True)
     x_i_rho = initial_i_rho.clone().detach().requires_grad_(True)
     x_I = initial_I.clone().detach().requires_grad_(True)
@@ -40,20 +40,20 @@ def adamw(q, r, func,
         {'params': x_de, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_be, 'lr': 0.1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
-        {'params': x_i_rho, 'lr': lr / 20, 'weight_decay': wd, 'betas': betas},
+        {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
         {'params': x_I, 'lr': 1.0e+3 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas}
     ])
-    x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 6)), dim=1).flatten()
+    x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=gamma)
     prev_loss = None
     rel_losses = []
 
     def current_loss_fn_wrapper():
-        return func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 6)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)
+        return func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg)
 
-    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 6)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
+    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg).item()
 
     trim_idx = slice(None, -1)  # =[:-1]
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
@@ -65,11 +65,11 @@ def adamw(q, r, func,
             with torch.enable_grad():
                 # собираем x_d из частей
                 x_d = torch.cat(
-                    (x_de.reshape(-1, 2), x_be.reshape(-1, 6)), dim=1
+                    (x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1
                 ).flatten()
 
                 current_loss = func(
-                    torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 6)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho),
+                    torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho),
                     sigma1, sigma2, x_I, x_Ibkg
                 )
 
@@ -90,21 +90,17 @@ def adamw(q, r, func,
                 corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
                 x_r_rho.grad[trim_idx] = corrected_grad_r_rho
 
+
             optimizer.step()
 
             # --- clamp по границам ---
             with torch.no_grad():
-                x_de.data = torch.clamp(x_de.data, d_bounds.reshape(-1,8, 2)[:,0:2,0].flatten(), d_bounds.reshape(-1,8, 2)[:,0:2,1].flatten())
-                x_be.data = torch.clamp(x_be.data, d_bounds.reshape(-1,8, 2)[:,2:,0].flatten(), d_bounds.reshape(-1,8, 2)[:,2:,1].flatten())
+                x_de.data = torch.clamp(x_de.data, d_bounds.reshape(-1,5, 2)[:,0:2,0].flatten(), d_bounds.reshape(-1,5, 2)[:,0:2,1].flatten())
+                x_be.data = torch.clamp(x_be.data, d_bounds.reshape(-1,5, 2)[:,2:,0].flatten(), d_bounds.reshape(-1,5, 2)[:,2:,1].flatten())
                 x_r_rho.data = torch.clamp(x_r_rho.data, r_rho_bounds[:, 0], r_rho_bounds[:, 1])
-                #x_i_rho.data = torch.clamp(x_i_rho.data, i_rho_bounds[:, 0], i_rho_bounds[:, 1])
                 x_I.data = torch.clamp_(x_I.data, I_bounds[0], I_bounds[1])
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
                 x_i_rho.data[trim_idx] = x_r_rho.data[trim_idx] * tg_x_rho
-            if i>=max_iter*0.9:
-                with torch.no_grad():
-                    x_be.data = 0.001 * x_be.data.sort()[0] + 0.999 * x_be.data
-
 
             scheduler.step()
             rel_losses.append((current_loss / initial_loss_value).item())
