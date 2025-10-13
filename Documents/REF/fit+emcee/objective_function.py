@@ -44,7 +44,9 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2)/r_conv1
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2)/r_min
         squared = ratio ** 2
         loss = torch.sum(squared).real
     
@@ -57,7 +59,9 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.6)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.6)
         squared = ratio ** 2
         loss = torch.sum(squared).real
 
@@ -70,7 +74,9 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.75)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.75)
         squared = ratio ** 2
         loss = torch.sum(squared).real
 
@@ -83,7 +89,9 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.875)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.875)
         squared = ratio ** 2
         loss = torch.sum(squared).real
 
