@@ -149,4 +149,69 @@ class varsigma:
 
     def objective_function(self, sigmas):
          return self.loss(self.matrix, sigmas[0], sigmas[1], self.I, self.Ibkg).cpu().detach().numpy()
+
+
+def period_loss(q, y, rx):
+        q = torch.tensor(q, dtype=torch.float)
+        y = torch.tensor(y, dtype = torch.float)
+        rx = torch.tensor(rx, dtype = torch.float)
+        below_threshold = torch.where(rx < 0.5)[0]
+        below_threshold1 = torch.where(y < 0.5)[0]
+        if len(below_threshold) == 0:
+            crit_dot = 0
+        else:
+            crit_dot = below_threshold[0]
+
+        if len(below_threshold1) == 0:
+            crit_dot1 = 0
+        else:
+            crit_dot1 = below_threshold1[0]
+
+        left = y[:-2]
+        center = y[1:-1]
+        right = y[2:]
+
+        left1 = rx[:-2]
+        center1 = rx[1:-1]
+        right1 = rx[2:]
+
+        max_mask = (center > left) & (center > right)
+        min_mask = (center < left) & (center < right)
+
+        max_mask1 = (center1 > left1) & (center1 > right1)
+        min_mask1 = (center1 < left1) & (center1 < right1)
+
+        # Фильтрация индексов
+        raw_max_indices = torch.where(max_mask)[0] + 1
+        raw_min_indices = torch.where(min_mask)[0] + 1
+
+        raw_max_indices1 = torch.where(max_mask1)[0] + 1
+        raw_min_indices1 = torch.where(min_mask1)[0] + 1
+
+        max_indices = raw_max_indices[raw_max_indices > crit_dot]
+        min_indices = raw_min_indices[raw_min_indices > crit_dot]
+
+        max_indices1 = raw_max_indices1[raw_max_indices1 > crit_dot1]
+        min_indices1 = raw_min_indices1[raw_min_indices1 > crit_dot1]
+
+        # Получение координат и их
+        x_max = (q[max_indices])
+        # y_max = (y[max_indices])
+        x_min = (q[min_indices])
+        # y_min = (y[min_indices])
+
+        x_max1 = (q[max_indices1])
+        # y_max1 = (r0[max_indices1])
+        x_min1 = (q[min_indices1])
+        # y_min1 = (r0[min_indices1])
+
+        # x_crit =q[crit_dot]
+        avg_period_mod = torch.mean(x_max[1:-1] - x_max[0:-2]) * 0.5e-10 + torch.mean(
+            x_min[1:-1] - x_min[0:-2]) * 0.5e-10
+        avg_period_exp = torch.mean(x_max1[1:-1] - x_max1[0:-2]) * 0.5e-10 + torch.mean(
+            x_min1[1:-1] - x_min1[0:-2]) * 0.5e-10
+
+        n_diff = abs(len(x_max) - len(x_max1)) + abs(len(x_min) - len(x_min1))
+
+        return float(abs(avg_period_mod - avg_period_exp) / torch.min(avg_period_exp, avg_period_mod)), float(n_diff)
     
