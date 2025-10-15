@@ -38,12 +38,10 @@ def linear_interpolate_tensor(tensor1, tensor2, num_steps):
 
 
 def comb_transformer(matr):
-    """""
     #first_gap = matr[3:5, :].unsqueeze(0).repeat(12, 1, 1).view(-1, 9)
-    first_gap = linear_interpolate_tensor(matr[3:5, :], matr[5:7, :], 12).view(-1, 9)
+    first_gap = linear_interpolate_tensor(matr[3:5, :], matr[5:7, :], 12).view(-1, 6)
 
-    second_gap = linear_interpolate_tensor(matr[10:12, :], matr[12:14, :], 75)
-    second_gap = second_gap.view(-1, 9)  # (75 * 2, 9) = (150, 9)
+    second_gap = linear_interpolate_tensor(matr[10:12, :], matr[12:14, :], 75).view(-1, 6)
 
     # Собираем итоговый тензор с помощью torch.cat
     comb = torch.cat([
@@ -62,7 +60,7 @@ def comb_transformer(matr):
         gap,
         matr[-1, :].unsqueeze(0)
     ], dim=0)
-
+    """""
     return comb
 
 
@@ -77,9 +75,9 @@ def transform_array(input_array_untransformed, N):
 
     for i in range(1, input_array.shape[0] - 1):
         if input_array[i, 0].real < input_array[i, 2].real:
-            _, ro1, _, _, _, _, _, _, _ = input_array[i - 1].real
-            d2, ro2, s2, _, _, _, _, _, _ = input_array[i].real
-            _, ro3, s3, _, _, _, _, _, _ = input_array[i + 1].real
+            _, ro1, _, _, _, _ = input_array[i - 1].real
+            d2, ro2, s2, _, _, _ = input_array[i].real
+            _, ro3, s3, _, _, _ = input_array[i + 1].real
 
             denom = (ro2 - ro1) / (s2 + eps) + (ro2 - ro3) / (s3 + eps)
 
@@ -119,7 +117,7 @@ def transform_array(input_array_untransformed, N):
     all_parts = [initial_part[0].unsqueeze(0)]
 
     for i in range(1, len(input_array_clone)):
-        d2, ro2, rough2, v1, v2, v3, v4, v5, v6 = input_array_clone[i]
+        d2, ro2, rough2, v1, v2, v3 = input_array_clone[i]
         ro1 = input_array_clone[i - 1][1]
         new_d = rough2 / N
         u = torch.linspace(0.0, 1.0, N, device=device)
@@ -128,7 +126,7 @@ def transform_array(input_array_untransformed, N):
         zero = torch.tensor(0.0, dtype=u.dtype, device=u.device)
         one = torch.tensor(1.0, dtype=u.dtype, device=u.device)
 
-        coeffs = torch.stack([zero, v1, v2, v3, v4, v5, v6, one])
+        coeffs = torch.stack([zero, v1, v2, v3, one])
 
         k_tensor = torch.arange(len(coeffs), dtype=u.dtype, device=u.device)
 

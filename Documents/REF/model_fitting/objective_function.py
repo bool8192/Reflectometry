@@ -23,18 +23,18 @@ class Comparator:
     def __init__(self, q, r):
         self.q = q
         self.r = r
-        
+
     def compare(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
         if ref_type == 'model':
             r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
-        
+
         diff = r_conv1 - r_conv2
-        squared = torch.abs(diff ** 2)
-        loss = torch.sum(squared)
-    
+        squared = diff ** 2
+        loss = torch.sum(squared).real
+
         return loss
 
     def compare_weightless(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
@@ -44,10 +44,12 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2)/r_conv1
-        squared = torch.abs(ratio ** 2)
-        loss = torch.sum(squared)
-    
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / r_min
+        squared = ratio ** 2
+        loss = torch.sum(squared).real
+
         return loss
 
     def compare_08(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
@@ -57,9 +59,11 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.6)
-        squared = torch.abs(ratio ** 2)
-        loss = torch.sum(squared)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.6)
+        squared = ratio ** 2
+        loss = torch.sum(squared).real
 
         return loss
 
@@ -70,9 +74,11 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.75)
-        squared = torch.abs(ratio ** 2)
-        loss = torch.sum(squared)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.75)
+        squared = ratio ** 2
+        loss = torch.sum(squared).real
 
         return loss
 
@@ -83,9 +89,11 @@ class Comparator:
         else:
             r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
-        ratio = (r_conv1 - r_conv2) / torch.pow(r_conv1, 0.875)
-        squared = torch.abs(ratio ** 2)
-        loss = torch.sum(squared)
+        r_min = torch.minimum(r_conv1.real, r_conv2.real)
+
+        ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.875)
+        squared = ratio ** 2
+        loss = torch.sum(squared).real
 
         return loss
 
@@ -111,8 +119,8 @@ class varbounds:
         
     def objective_function(self, var_vector_d, var_vector_rho, var_sigma1, var_sigma2, var_I0, var_Ibkg):
         if self.ref_type == 'model':
-            var_vector = torch.cat((var_vector_d.reshape(-1, 8), var_vector_rho.reshape(-1, 1)), dim=1)[:,
-                         torch.tensor([0, 8, 1, 2, 3, 4, 5, 6, 7])].flatten()
+            var_vector = torch.cat((var_vector_d.reshape(-1, 5), var_vector_rho.reshape(-1, 1)), dim=1)[:,
+                         torch.tensor([0, 5, 1, 2, 3, 4])].flatten()
             flat_base0 = self.bounds[..., 0].flatten()
             flat_base = torch.complex(flat_base0, torch.zeros_like(flat_base0))
             result = flat_base.scatter(0, self.indices_flat, var_vector)
@@ -136,7 +144,7 @@ class varsigma:
         self.I = I
         self.Ibkg = Ibkg
         self.loss = loss_func
-        self.matrix = repair_matrix(all_bounds, torch.cat((d_vector.reshape(-1, 8), torch.complex(r_rho_vector, i_rho_vector).reshape(-1, 1)), dim = 1)[:, [0, 8, 1, 2, 3, 4, 5, 6, 7]].flatten())
+        self.matrix = repair_matrix(all_bounds, torch.cat((d_vector.reshape(-1, 5), torch.complex(r_rho_vector, i_rho_vector).reshape(-1, 1)), dim = 1)[:, [0, 5, 1, 2, 3, 4]].flatten())
 
     def objective_function(self, sigmas):
          return self.loss(self.matrix, sigmas[0], sigmas[1], self.I, self.Ibkg).cpu().detach().numpy()
