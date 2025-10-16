@@ -5,28 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a546d524-59e4-469c-85b6-d66ee810789d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/dyploma/234.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/a0000-img001.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/a0000-img002.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/conv.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/conv_h.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/convs.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/main.tex" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/ref_trace.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/refl_scheme.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/roughness.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/ир8.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/ковальчук2017развитие.bib" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/разрез_ир8.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dyploma/сыромятников2022нейтронная.bib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dyploma_draft.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/dyploma/dyploma_draft.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fit+emcee/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fit+emcee/fitting.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_fitting/add_roughness.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/add_roughness.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_fitting/calculating_dynamic_resolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/calculating_dynamic_resolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_fitting/fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/fitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_fitting/objective_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/objective_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_fitting/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_fitting/ref_matrix.txt" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/ref_matrix.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_fitting/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_fitting/variables.py" afterDir="false" />
     </list>
