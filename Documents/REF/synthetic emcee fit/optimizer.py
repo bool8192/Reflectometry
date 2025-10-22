@@ -41,8 +41,8 @@ def adamw(q, r, func,
         {'params': x_be, 'lr': 0.1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
-        {'params': x_I, 'lr': 1.0e+3 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas}
+        {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
+        {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -236,6 +236,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
                   initial_d,
                   initial_r_r, initial_r_i,
                   I0, Ibkg,
+                  sigma1, sigma2,
                   learning_rates=None,  # Список скоростей обучения
                   iterations=None,     # Список чисел итераций
                   loss_classes=None,     # Список экземпляров классов с методами objective_function
@@ -281,6 +282,9 @@ def pie_optimizer(q, r, betas, gamma, wd,
 
         print(f"Stage {idx+1}: Learning Rate={lr}, Iterations={iters}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg)/init_temp_loss}")
 
+        combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)), dim=1)[:, torch.tensor([0, 5, 1, 2, 3, 4])]
+        matroxx = torch.cat((matr[0, :].reshape(-1, 6), combined_x_for_print.reshape(-1, 6)), axis=0)
+        twin_plotter(matroxx, q, r * ans_I, sigma1, sigma2, I0, ans_Ibkg, ans_I)
         # Применяем правило нормализации относительно предыдущих потерь
         if idx > 0:
             rel_losses_stage = list(map(lambda x: x * rel_losses_total[-1], rel_losses_stage))
@@ -294,8 +298,10 @@ def pie_optimizer(q, r, betas, gamma, wd,
     if model_type=='model':
         objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss_function.compare, all_bounds)
 
-
         bounds = [sigma_bounds1, sigma_bounds2]
         ans_sigma1, ans_sigma2 = de(func=objective_function_sigma.objective_function, bounds=bounds).x
+        print(f"Stage DE: sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
+        twin_plotter(matroxx, q, r * ans_I, ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_I)
+    else: ans_sigma1, ans_sigma2 = sigma1, sigma2
 
-    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_total
+    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_sigma1, ans_sigma2, loss, rel_losses_total

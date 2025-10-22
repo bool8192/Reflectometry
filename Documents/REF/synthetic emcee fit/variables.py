@@ -14,11 +14,11 @@ Ndots_norm :int = 11
 gap :int = 0.1
 Ndots_trace :int = 4
 deltaq :float = 0.0
-Ibkg = torch.nn.Parameter(torch.tensor(32.0, dtype=torch.float64))
+Ibkg = torch.nn.Parameter(torch.tensor(1.0, dtype=torch.float64))
 
 
 
-data = np.loadtxt('synth_exp.txt')
+data = np.loadtxt('synth_exp_sigma=2.txt')
 
 r0 = data[0:, 1]
 r2 = data[:, 1]
@@ -27,7 +27,7 @@ sigma = sigma+0.0
 Ibkg=Ibkg+0.0
 I0_plus = np.mean(r0[r0 > 0.9*r1[0]][0:1+math.ceil(len(r0[r0 > 0.9*r1[0]])*0.7)])
 I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
-I0 = torch.nn.Parameter(torch.tensor(7826414.0, dtype=torch.float64))
+#I0 = torch.nn.Parameter(torch.tensor(7826414.0, dtype=torch.float64))
 
 
 
@@ -71,9 +71,9 @@ i_rho_bounds = torch.cat((0.1*initial_i_rho.reshape(-1, 1), 1.9*initial_i_rho.re
 initial_sigma1 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 initial_sigma2 = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
-I_bounds =  torch.tensor([0.997*I0.clone().detach() , 1.003*I0.clone().detach()]).requires_grad_(True)
-Ibkg_bounds = torch.tensor([0.0, 3*Ibkg.clone().detach()]).requires_grad_(True)
+I_bounds =  torch.tensor([0.99*I0.clone().detach() , 1.733*I0.clone().detach()]).requires_grad_(True)
+Ibkg_bounds = torch.tensor([0.01, 800.0*Ibkg.clone().detach()]).requires_grad_(True)
 
-sigma_bounds1 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
-sigma_bounds2 =  torch.tensor([0.001 , 0.011]).requires_grad_(False)
+sigma_bounds1 =  torch.tensor([0.001 , 0.03]).requires_grad_(False)
+sigma_bounds2 =  torch.tensor([0.001 , 0.03]).requires_grad_(False)
 
