@@ -41,8 +41,8 @@ def adamw(q, r, func,
         {'params': x_be, 'lr': 0.1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
-        {'params': x_I, 'lr': 1.0e+3 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas}
+        {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
+        {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -58,7 +58,7 @@ def adamw(q, r, func,
     trim_idx = slice(None, -1)  # =[:-1]
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
 
-    t = tqdm(range(max_iter), desc="Optimizing", ncols=120)
+    t = tqdm(range(int(max_iter)), desc="Optimizing", ncols=120)
     for i in t:
         optimizer.zero_grad(set_to_none=True)
         try:
@@ -236,6 +236,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
                   initial_d,
                   initial_r_r, initial_r_i,
                   I0, Ibkg,
+                  sigma1, sigma2,
                   learning_rates=None,  # Список скоростей обучения
                   iterations=None,     # Список чисел итераций
                   loss_classes=None,     # Список экземпляров классов с методами objective_function
@@ -255,7 +256,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
     rel_losses_total = []
 
     # Основной цикл по этапам оптимизации
-    for idx, (lr, iters, loss_class) in enumerate(zip(learning_rates, iterations, loss_classes)):
+    for idx, (lr, iters, loss_class) in enumerate(zip(learning_rates[0:-1], iterations[0:-1], loss_classes[0:-1])):
         init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type=='model':
@@ -281,6 +282,9 @@ def pie_optimizer(q, r, betas, gamma, wd,
 
         print(f"Stage {idx+1}: Learning Rate={lr}, Iterations={iters}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg)/init_temp_loss}")
 
+        combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)), dim=1)[:, torch.tensor([0, 5, 1, 2, 3, 4])]
+        matroxx = torch.cat((matr[0, :].reshape(-1, 6), combined_x_for_print.reshape(-1, 6)), axis=0)
+        twin_plotter(matroxx, q, r * ans_I, sigma1, sigma2, I0, ans_Ibkg, ans_I)
         # Применяем правило нормализации относительно предыдущих потерь
         if idx > 0:
             rel_losses_stage = list(map(lambda x: x * rel_losses_total[-1], rel_losses_stage))
@@ -291,11 +295,68 @@ def pie_optimizer(q, r, betas, gamma, wd,
     # Последняя стадия оптимизации после дифференциальной эволюции
     from scipy.optimize import differential_evolution as de
     loss_function = Comparator(q, r)
-    if model_type=='model':
-        objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss_function.compare, all_bounds)
+    iters = iterations[-1]
 
+    for k in range(4):
+        if model_type == 'model':
+            objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss_function.compare,
+                                                all_bounds)
 
-        bounds = [sigma_bounds1, sigma_bounds2]
-        ans_sigma1, ans_sigma2 = de(func=objective_function_sigma.objective_function, bounds=bounds).x
+            bounds = [sigma_bounds1, sigma_bounds2]
+            ans_sigma1, ans_sigma2 = de(func=objective_function_sigma.objective_function, bounds=bounds).x
+        else:
+            ans_sigma1, ans_sigma2 = sigma1, sigma2
 
-    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_total
+        loss_class = loss_classes[-1]
+        init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1,
+                                                       initial_sigma2, I0, ans_Ibkg)
+        # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
+        if model_type == 'model':
+            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_stage = adamw(q, r,
+                                                                                         loss_class.objective_function,
+                                                                                         ans_sigma1, ans_sigma2,
+                                                                                         ans_d, ans_r_rho, ans_i_rho,
+                                                                                         ans_I,
+                                                                                         ans_Ibkg,
+                                                                                         d_bounds, r_rho_bounds,
+                                                                                         i_rho_bounds, I_bounds,
+                                                                                         Ibkg_bounds,
+                                                                                         betas=betas, gamma=gamma,
+                                                                                         wd=wd,
+                                                                                         lr=lr, max_iter=iters / 4, k=3)
+        else:
+            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_stage = adamw_freeform(q, r,
+                                                                                                  loss_class.objective_function,
+                                                                                                  ans_sigma1,
+                                                                                                  ans_sigma2,
+                                                                                                  ans_d, ans_r_rho,
+                                                                                                  ans_i_rho,
+                                                                                                  ans_I, ans_Ibkg,
+                                                                                                  d_bounds_ff,
+                                                                                                  r_rho_bounds_ff,
+                                                                                                  i_rho_bounds_ff,
+                                                                                                  I_bounds,
+                                                                                                  Ibkg_bounds,
+                                                                                                  betas=betas,
+                                                                                                  gamma=gamma,
+                                                                                                  wd=wd,
+                                                                                                  lr=lr,
+                                                                                                  max_iter=iters / 4,
+                                                                                                  k=3)
+
+        print(
+            f"Stage DE {k+1}: Learning Rate={lr}, Iterations={iters/4}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), ans_sigma1, ans_sigma2, I0, ans_Ibkg) / init_temp_loss}, sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
+
+        combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)),
+                                         dim=1)[
+                               :, torch.tensor([0, 5, 1, 2, 3, 4])]
+        matroxx = torch.cat((matr[0, :].reshape(-1, 6), combined_x_for_print.reshape(-1, 6)), axis=0)
+        twin_plotter(matroxx, q, r * ans_I, ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_I)
+        # Применяем правило нормализации относительно предыдущих потерь
+        if idx > 0:
+            rel_losses_stage = list(map(lambda x: x * rel_losses_total[-1], rel_losses_stage))
+
+    # Накапливаем потери текущего этапа
+    rel_losses_total.extend(rel_losses_stage)
+
+    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_sigma1, ans_sigma2, loss, rel_losses_total
