@@ -1,6 +1,6 @@
 from add_roughness import transform_array
 from variables import rough_res
-from ref import reflectometry, reflectometry_freeform
+from ref import *
 import matplotlib.pyplot as plt
 from variables import sigma
 import torch
@@ -26,74 +26,84 @@ class Comparator:
 
     def compare(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
+        score1 = chain(r_conv1)
         if ref_type == 'model':
-            r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
-            r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
         diff = r_conv1 - r_conv2
         squared = diff ** 2
-        loss = torch.sum(squared).real
+        loss = torch.sum(squared).real + torch.sum(torch.pow(score1-score2, 2))
+        #print(torch.sum(squared).real,torch.sum(torch.pow(score1-score2, 2)))
 
         return loss
 
     def compare_weightless(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
+        score1 = chain(r_conv1)
         if ref_type == 'model':
-            r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
-            r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
         r_min = torch.minimum(r_conv1.real, r_conv2.real)
 
         ratio = (r_conv1 - r_conv2) / r_min
         squared = ratio ** 2
-        loss = torch.sum(squared).real
+        loss = torch.sum(squared).real + torch.sum(torch.pow(score1-score2, 2))
+        #print(torch.sum(squared).real , torch.sum(torch.pow(score1 - score2, 2)))
 
         return loss
 
     def compare_08(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
+        score1 = chain(r_conv1)
         if ref_type == 'model':
-            r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
-            r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
         r_min = torch.minimum(r_conv1.real, r_conv2.real)
 
         ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.6)
         squared = ratio ** 2
-        loss = torch.sum(squared).real
+        loss = torch.sum(squared).real + torch.sum(torch.pow(score1-score2, 2))
+        #print(torch.sum(squared).real , torch.sum(torch.pow(score1 - score2, 2)))
 
         return loss
 
     def compare_05(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
+        score1 = chain(r_conv1)
         if ref_type == 'model':
-            r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
-            r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
         r_min = torch.minimum(r_conv1.real, r_conv2.real)
 
         ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.75)
         squared = ratio ** 2
-        loss = torch.sum(squared).real
+        loss = torch.sum(squared).real + torch.sum(torch.pow(score1-score2, 2))
+        #print(torch.sum(squared).real , torch.sum(torch.pow(score1 - score2, 2)))
 
         return loss
 
     def compare_025(self, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg, ref_type='model'):
         r_conv1 = self.r
+        score1 = chain(r_conv1)
         if ref_type == 'model':
-            r2, r_conv2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
         else:
-            r2, r_conv2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
+            r2, r_conv2, score2 = reflectometry_freeform(self.q, var_matr, var_sigma1, var_sigma2, var_I0, var_Ibkg)
 
         r_min = torch.minimum(r_conv1.real, r_conv2.real)
 
         ratio = (r_conv1 - r_conv2) / torch.pow(r_min, 0.875)
         squared = ratio ** 2
-        loss = torch.sum(squared).real
+        loss = torch.sum(squared).real + torch.sum(torch.pow(score1-score2, 2))
+        #print(torch.sum(squared).real, torch.sum(torch.pow(score1 - score2, 2)))
 
         return loss
 

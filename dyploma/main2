@@ -1,0 +1,27 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage[backend=biber, style=gost-numeric]{biblatex}
+\usepackage{csquotes}
+\usepackage{titlesec}
+
+\begin{document}
+\begin{center}
+\Large
+Министерство науки и высшего образования Российской Федерации  \\[0.5em]
+НАЦИОНАЛЬНЫЙ ИССЛЕДОВАТЕЛЬСКИЙ ЯДЕРНЫЙ УНИВЕРСИТЕТ «МИФИ» \\[0.5em]
+Институт ядерной физики и технологий (ИЯФиТ) \\[0.5em]
+Кафедра электрофизических установок (№14)
+\Large
+\end{center}
+\end{document}
