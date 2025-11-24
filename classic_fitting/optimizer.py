@@ -269,7 +269,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
         init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg, ans_alpha2)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type=='model':
-            if idx == 0:
+            if idx == 0 or idx == 1 or idx == 2:
                 ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, loss, rel_losses_stage = adamw_alpha(q, r, loss_class.objective_function,
                                                       initial_sigma1, initial_sigma2,
                                                       ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2,

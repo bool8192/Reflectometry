@@ -84,6 +84,57 @@ def convolution(r, qmax, q0, Ndots_norm, sigma1_param, sigma2_param, gapi):
     return torch.sum(r[indices] * weights, dim=1)
 
 
+def convolution_dq(r, qmax, q0, Ndots_norm, sigma1_param, sigma2_param, gapi):
+    device = 'cpu'
+    # Конвертация q0 в тензор с проверкой текущего устройства
+    if not isinstance(q0, torch.Tensor):
+        q0 = torch.tensor(q0, device=device, dtype=torch.float32)
+    elif q0.device.type != device:
+        q0 = q0.to(device=device)
+
+    sigma1_scaled = sigma1_param * 0.4191
+    sigma2_scaled = sigma2_param * 0.4191
+    gap = torch.tensor(gapi, device=device, dtype=torch.float32)  # Тензор зазора
+
+    # Вычисление относительных значений q
+    q_rel = q0 / qmax  # Нормировка на максимальное значение
+
+    # Создание базового окна для свертки
+    q_window = torch.linspace(-3, 3, Ndots_norm, device=device).unsqueeze(0)
+
+    # Инициализация весовых коэффициентов нормальным распределением
+    weights = torch.exp(-0.5 * q_window.pow(2)) * 0.39894228
+    weights = weights.repeat(q0.size(0), 1)  # Расширение для всех точек
+
+    # Расчет матрицы сигм с использованием функции разрешения
+    sigma_matrix = resolution_function_smooth_step(
+        torch.ones_like(q_rel, device=device),
+        q_rel,
+        sigma1_scaled,
+        sigma2_scaled,
+        gap
+    ).unsqueeze(1)  # Добавление размерности для broadcast
+
+    # Вычисление абсолютных значений q с учетом окна
+    q_abs = q0.unsqueeze(1) * (1 + sigma_matrix * q_window * torch.pow(q0 / q0[-1], -1).unsqueeze(1))
+    # Поиск позиций в исходном массиве через бинарный поиск
+    indices = torch.searchsorted(q0, q_abs)
+
+    # Ограничение индексов в допустимом диапазоне
+    indices = torch.clamp(indices, 0, len(r) - 1)
+    # Создание маски валидных значений
+    valid_mask = (q_abs >= q0[0]) & (q_abs <= q0[-1])
+    # Применение маски к весам
+    weights = weights * valid_mask
+
+    # Нормировка весов с защитой от деления на ноль
+    sum_weights = weights.sum(dim=1, keepdim=True)
+    weights = torch.where(sum_weights > 0, weights / sum_weights, weights)
+
+    # Возврат результата свертки в виде списка
+    return torch.sum(r[indices] * weights, dim=1)
+
+
 def resolution_function_smooth_step(qmax_rel, q_rel, sigma1, sigma2, gap):
     """
     Векторизованная реализация функции разрешения с плавным переходом между сигмами.
@@ -121,3 +172,4 @@ def resolution_function_smooth_step(qmax_rel, q_rel, sigma1, sigma2, gap):
     result = torch.where(mask_after, sigma2, result)
     
     return result
+

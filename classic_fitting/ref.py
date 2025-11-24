@@ -1,5 +1,5 @@
 from calculating_dynamic_resolution import *
-from convolution import convolution
+from convolution import convolution, convolution_dq
 from variables import *
 from read_complex_matrix import *
 import torch.nn.functional as F
@@ -58,7 +58,7 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha
     r_2, r_real2, r_img2 = calculate_matrices_and_reflection(matrix, rough_res, kmax, 2*q, Ndots, gap)
     r = (1-var_alpha2)*r_1 + var_alpha2*r_2
     
-    r_conv = convolution(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg/var_I0
+    r_conv = convolution_dq(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg/var_I0
 
     #score = chain(r_conv)
     score = torch.zeros_like(r_conv, dtype=torch.float64)
@@ -71,7 +71,7 @@ def reflectometry_freeform(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, 
     r_2, r_real2, r_img2 = calculate_matrices_and_reflection_freeform(matrix, rough_res, kmax, 2*q, Ndots, gap)
     r = (1 - var_alpha2) * r_1 + var_alpha2 * r_2
 
-    r_conv = convolution(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg / var_I0
+    r_conv = convolution_dq(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg / var_I0
 
     #score = chain(r_conv)
     score = torch.zeros_like(r_conv, dtype=torch.float64)

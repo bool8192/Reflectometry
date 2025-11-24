@@ -8,8 +8,8 @@ rough_res :int = 8
 kmax :int = 1.45e+9
 dq :int = 0.2e+8
 sigma = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
-sigma1  = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
-sigma2  = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
+sigma1  = torch.nn.Parameter(torch.tensor(0.003, dtype=torch.float64))
+sigma2  = torch.nn.Parameter(torch.tensor(0.003, dtype=torch.float64))
 Ndots_norm :int = 31
 Ndots_extr :int = 14
 gap :int = 0.1
@@ -134,8 +134,8 @@ initial_sigma2 = torch.nn.Parameter(torch.tensor(0.02, dtype=torch.float64))
 I_bounds =  torch.tensor([0.97*I0.clone().detach() , 1.733*I0.clone().detach()]).requires_grad_(True)
 Ibkg_bounds = torch.tensor([0.001, 9000*Ibkg.clone().detach()]).requires_grad_(True)
 
-sigma_bounds1 = torch.tensor([0.01 , 0.06]).requires_grad_(False)
-sigma_bounds2 = torch.tensor([0.01 , 0.06]).requires_grad_(False)
+sigma_bounds1 = torch.tensor([0.001 , 0.02]).requires_grad_(False)
+sigma_bounds2 = torch.tensor([0.001 , 0.02]).requires_grad_(False)
 
 alpha2_bounds = torch.tensor([0.1 , 0.9]).requires_grad_(True)
 
