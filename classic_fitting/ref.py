@@ -41,7 +41,7 @@ def chain(r_conv):
     #score = pow(p_left * p_right, 1.2)
     return score
 
-def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha2):
+def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha2, var_delta_q):
     """
     Анализ спектра отражательной способности с поиском экстремумов
     
@@ -54,8 +54,9 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha
     #y: вектор всех значений коэффициента отражения со свёрткой
     #score: подсветка пиков в r_conv
     """
-    r_1, r_real1, r_img1 = calculate_matrices_and_reflection(matrix, rough_res, kmax, q, Ndots, gap)
-    r_2, r_real2, r_img2 = calculate_matrices_and_reflection(matrix, rough_res, kmax, 2*q, Ndots, gap)
+    r_1, r_real1, r_img1 = calculate_matrices_and_reflection(matrix, rough_res, kmax, q+var_delta_q, Ndots, gap)
+    r_2, r_real2, r_img2 = calculate_matrices_and_reflection(matrix, rough_res, kmax, 2*(q+var_delta_q), Ndots, gap)
+
     r = (1-var_alpha2)*r_1 + var_alpha2*r_2
     
     r_conv = convolution_dq(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg/var_I0
@@ -66,9 +67,10 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha
     return r, r_conv, score
 
 
-def reflectometry_freeform(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha2):
-    r_1, r_real1, r_img1 = calculate_matrices_and_reflection_freeform(matrix, rough_res, kmax, q, Ndots, gap)
-    r_2, r_real2, r_img2 = calculate_matrices_and_reflection_freeform(matrix, rough_res, kmax, 2*q, Ndots, gap)
+def reflectometry_freeform(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha2, var_delta_q):
+    r_1, r_real1, r_img1 = calculate_matrices_and_reflection_freeform(matrix, rough_res, kmax, q+var_delta_q, Ndots, gap)
+    r_2, r_real2, r_img2 = calculate_matrices_and_reflection_freeform(matrix, rough_res, kmax, 2*(q+var_delta_q), Ndots, gap)
+
     r = (1 - var_alpha2) * r_1 + var_alpha2 * r_2
 
     r_conv = convolution_dq(r, kmax, q, Ndots_norm, var_sigma1, var_sigma2, gap) + var_Ibkg / var_I0

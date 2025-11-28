@@ -6,8 +6,8 @@ from tqdm import tqdm
 import torch.nn as nn
 
 
-def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I, var_alpha2):
-    r2, r_conv2, score2 = reflectometry(q, matr, var_sigma1, var_sigma2, var_I, var_Ibkg, var_alpha2)
+def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I, var_alpha2, var_delta_q):
+    r2, r_conv2, score2 = reflectometry(q, matr, var_sigma1, var_sigma2, var_I, var_Ibkg, var_alpha2, var_delta_q)
     fig, ax = plt.subplots(figsize=(15, 2.6))
 
     ax.plot(q.cpu().detach().numpy()[0:len(r.tolist())] * 1e-10, (r).tolist())
@@ -22,8 +22,9 @@ def adamw_alpha(q, r, func,
           sigma1, sigma2,
           initial_d, initial_r_rho, initial_i_rho,
           initial_I, initial_Ibkg, initial_alpha2,
+          initial_delta_q,
           d_bounds, r_rho_bounds, i_rho_bounds,
-          I_bounds, Ibkg_bounds, alpha2_bounds,
+          I_bounds, Ibkg_bounds, alpha2_bounds, delta_q_bounds,
           betas=(0.99, 0.999), gamma=0.9, wd=0,
           max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
@@ -35,6 +36,7 @@ def adamw_alpha(q, r, func,
     x_I = initial_I.clone().detach().requires_grad_(True)
     x_Ibkg = initial_Ibkg.clone().detach().requires_grad_(True)
     x_alpha2 = initial_alpha2.clone().detach().requires_grad_(True)
+    x_delta_q = initial_delta_q.clone().detach().requires_grad_(True)
 
     x_I.retain_grad()
     x_Ibkg.retain_grad()
@@ -46,7 +48,8 @@ def adamw_alpha(q, r, func,
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
         {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas},
-        {'params': x_alpha2, 'lr': 0.04 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
+        {'params': x_alpha2, 'lr': 0.04 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
+        {'params': x_delta_q, 'lr': 10 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -54,7 +57,7 @@ def adamw_alpha(q, r, func,
     prev_loss = None
     rel_losses = []
 
-    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg, x_alpha2).item()
+    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg, x_alpha2, x_delta_q).item()
 
     trim_idx = slice(None, -1)
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
@@ -71,7 +74,7 @@ def adamw_alpha(q, r, func,
 
                 current_loss = func(
                     torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho),
-                    sigma1, sigma2, x_I, x_Ibkg, x_alpha2
+                    sigma1, sigma2, x_I, x_Ibkg, x_alpha2, x_delta_q
                 )
 
             current_loss.backward()
@@ -83,6 +86,7 @@ def adamw_alpha(q, r, func,
             torch.nn.utils.clip_grad_norm_(x_i_rho, max_norm=1.0)
             torch.nn.utils.clip_grad_norm_(x_I, max_norm=1.0)
             torch.nn.utils.clip_grad_norm_(x_Ibkg, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_delta_q, max_norm=9000.0)
 
             # --- ручная коррекция градиентов ---
             with torch.no_grad():
@@ -90,7 +94,6 @@ def adamw_alpha(q, r, func,
                 grad_i_rho_trimmed = x_i_rho.grad[trim_idx]
                 corrected_grad_r_rho = (grad_i_rho_trimmed + grad_r_rho_trimmed) / 2
                 x_r_rho.grad[trim_idx] = corrected_grad_r_rho
-
 
             optimizer.step()
 
@@ -103,6 +106,7 @@ def adamw_alpha(q, r, func,
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
                 x_alpha2.data = torch.clamp(x_alpha2.data, alpha2_bounds[0], alpha2_bounds[1])
                 x_i_rho.data[trim_idx] = x_r_rho.data[trim_idx] * tg_x_rho
+                x_delta_q.data = torch.clamp(x_delta_q.data, delta_q_bounds[0], delta_q_bounds[1])
 
             scheduler.step()
             rel_losses.append((current_loss / initial_loss_value).item())
@@ -127,14 +131,14 @@ def adamw_alpha(q, r, func,
 
         prev_loss = current_loss.item()
 
-    return x_d.detach(), x_r_rho.detach(), x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), x_alpha2.detach(), current_loss.item(), rel_losses
+    return x_d.detach(), x_r_rho.detach(), x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), x_alpha2.detach(), x_delta_q.detach(), current_loss.item(), rel_losses
 
 
 
 def adamw(q, r, func,
           sigma1, sigma2,
-          initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg, ans_alpha2,
-          d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds,
+          initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg, ans_alpha2, initial_delta_q,
+          d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, delta_q_bounds,
           betas=(0.99, 0.999), gamma=0.9, wd=0,
           max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
@@ -145,6 +149,7 @@ def adamw(q, r, func,
     x_i_rho = initial_i_rho.clone().detach().requires_grad_(True)
     x_I = initial_I.clone().detach().requires_grad_(True)
     x_Ibkg = initial_Ibkg.clone().detach().requires_grad_(True)
+    x_delta_q = initial_delta_q.clone().detach().requires_grad_(True)
 
     x_I.retain_grad()
     x_Ibkg.retain_grad()
@@ -155,7 +160,8 @@ def adamw(q, r, func,
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
         {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
-        {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas}
+        {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_delta_q, 'lr': 10*lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -163,7 +169,7 @@ def adamw(q, r, func,
     prev_loss = None
     rel_losses = []
 
-    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg, ans_alpha2).item()
+    initial_loss_value = func(torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho), sigma1, sigma2, x_I, x_Ibkg, ans_alpha2, x_delta_q).item()
 
     trim_idx = slice(None, -1)  # =[:-1]
     tg_x_rho = (x_i_rho[trim_idx] / x_r_rho[trim_idx]).detach()
@@ -180,7 +186,7 @@ def adamw(q, r, func,
 
                 current_loss = func(
                     torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten(), torch.complex(x_r_rho, x_i_rho),
-                    sigma1, sigma2, x_I, x_Ibkg, ans_alpha2
+                    sigma1, sigma2, x_I, x_Ibkg, ans_alpha2, x_delta_q,
                 )
 
             current_loss.backward()
@@ -192,6 +198,7 @@ def adamw(q, r, func,
             torch.nn.utils.clip_grad_norm_(x_i_rho, max_norm=1.0)
             torch.nn.utils.clip_grad_norm_(x_I, max_norm=1.0)
             torch.nn.utils.clip_grad_norm_(x_Ibkg, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(x_delta_q, max_norm=9000.0)
 
             # --- ручная коррекция градиентов ---
             with torch.no_grad():
@@ -211,6 +218,7 @@ def adamw(q, r, func,
                 x_I.data = torch.clamp_(x_I.data, I_bounds[0], I_bounds[1])
                 x_Ibkg.data = torch.clamp(x_Ibkg.data, Ibkg_bounds[0], Ibkg_bounds[1])
                 x_i_rho.data[trim_idx] = x_r_rho.data[trim_idx] * tg_x_rho
+                x_delta_q.data = torch.clamp(x_delta_q.data, delta_q_bounds[0], delta_q_bounds[1])
 
             scheduler.step()
             rel_losses.append((current_loss / initial_loss_value).item())
@@ -235,7 +243,7 @@ def adamw(q, r, func,
 
         prev_loss = current_loss.item()
 
-    return x_d.detach(), x_r_rho.detach(), x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), current_loss.item(), rel_losses
+    return x_d.detach(), x_r_rho.detach(), x_i_rho.detach(), x_I.detach(), x_Ibkg.detach(), x_delta_q.detach(), current_loss.item(), rel_losses
 
 
 
@@ -243,7 +251,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
                   initial_d,
                   initial_r_r, initial_r_i,
                   I0, Ibkg,
-                  initial_alpha2,
+                  initial_alpha2, initial_delta_q,
                   sigma1, sigma2,
                   learning_rates=None,  # Список скоростей обучения
                   iterations=None,     # Список чисел итераций
@@ -252,13 +260,14 @@ def pie_optimizer(q, r, betas, gamma, wd,
                   ):
 
     # Готовим начальные значения перед началом первого этапа
-    ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2 = (
+    ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q = (
         initial_d.clone(),
         initial_r_r.clone(),
         initial_r_i.clone(),
         I0.clone(),
         Ibkg.clone(),
-        initial_alpha2.clone()
+        initial_alpha2.clone(),
+        initial_delta_q.clone()
     )
 
     # Массив для накопления относительных потерь
@@ -266,31 +275,52 @@ def pie_optimizer(q, r, betas, gamma, wd,
 
     # Основной цикл по этапам оптимизации
     for idx, (lr, iters, loss_class) in enumerate(zip(learning_rates[0:-1], iterations[0:-1], loss_classes[0:-1])):
-        init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg, ans_alpha2)
+        init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg, ans_alpha2, ans_delta_q)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type=='model':
             if idx == 0 or idx == 1 or idx == 2:
-                ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, loss, rel_losses_stage = adamw_alpha(q, r, loss_class.objective_function,
+                ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q, loss, rel_losses_stage = adamw_alpha(q, r, loss_class.objective_function,
                                                       initial_sigma1, initial_sigma2,
-                                                      ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2,
-                                                      d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, alpha2_bounds,
+                                                      ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q,
+                                                      d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, alpha2_bounds, delta_q_bounds,
                                                       betas=betas, gamma=gamma, wd=wd,
                                                       lr=lr, max_iter=iters, k=3)
-            else: ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_stage = adamw(q, r, loss_class.objective_function,
+            else: ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_delta_q, loss, rel_losses_stage = adamw(q, r, loss_class.objective_function,
                                                       initial_sigma1, initial_sigma2,
-                                                      ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2,
-                                                      d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds,
+                                                      ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q,
+                                                      d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, delta_q_bounds,
                                                       betas=betas, gamma=gamma, wd=wd,
                                                       lr=lr, max_iter=iters, k=3)
         else:
             print('this model is not using freeform')
 
+        def f3(x):
+            return f"{float(x):.3f}"
 
-        print(f"Stage {idx+1}: Learning Rate={lr}, Iterations={iters}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg, ans_alpha2)/init_temp_loss}")
+        def f3e(x):
+            return f"{float(x):.3e}"  # научная нотация
+
+        relative_loss = loss_class.objective_function(
+            ans_d,
+            torch.complex(ans_r_rho, ans_i_rho),
+            initial_sigma1,
+            initial_sigma2,
+            I0,
+            ans_Ibkg,
+            ans_alpha2,
+            ans_delta_q
+        ) / init_temp_loss
+
+        print(
+            f"Stage {idx + 1}: "
+            f"dq={f3e(ans_delta_q * 1e-10)}, "
+            f"alpha2={f3(ans_alpha2)}, "
+            f"relative_loss={f3(relative_loss)}"
+        )
 
         combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)), dim=1)[:, torch.tensor([0, 5, 1, 2, 3, 4])]
         matroxx = torch.cat((matr[0, :].reshape(-1, 6), combined_x_for_print.reshape(-1, 6)), axis=0)
-        twin_plotter(matroxx, q, r * ans_I, sigma1, sigma2, I0, ans_Ibkg, ans_I, ans_alpha2)
+        twin_plotter(matroxx, q, r * ans_I, sigma1, sigma2, I0, ans_Ibkg, ans_I, ans_alpha2, initial_delta_q)
         # Применяем правило нормализации относительно предыдущих потерь
         if idx > 0:
             rel_losses_stage = list(map(lambda x: x * rel_losses_total[-1], rel_losses_stage))
@@ -305,7 +335,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
 
     for k in range(2):
         if model_type == 'model':
-            objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, loss_function.compare,
+            objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q, loss_function.compare,
                                                 all_bounds)
 
             bounds = [sigma_bounds1, sigma_bounds2]
@@ -315,18 +345,18 @@ def pie_optimizer(q, r, betas, gamma, wd,
 
         loss_class = loss_classes[-1]
         init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1,
-                                                       initial_sigma2, ans_I, ans_Ibkg, ans_alpha2)
+                                                       initial_sigma2, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type == 'model':
-            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, loss, rel_losses_stage = adamw(q, r,
+            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, abs_delta_q, loss, rel_losses_stage = adamw(q, r,
                                                                                          loss_class.objective_function,
                                                                                          ans_sigma1, ans_sigma2,
                                                                                          ans_d, ans_r_rho, ans_i_rho,
                                                                                          ans_I,
-                                                                                         ans_Ibkg, ans_alpha2,
+                                                                                         ans_Ibkg, ans_alpha2, ans_delta_q,
                                                                                          d_bounds, r_rho_bounds,
                                                                                          i_rho_bounds, I_bounds,
-                                                                                         Ibkg_bounds,
+                                                                                         Ibkg_bounds, delta_q_bounds,
                                                                                          betas=betas, gamma=gamma,
                                                                                          wd=wd,
                                                                                          lr=lr, max_iter=iters / 4, k=3)
@@ -334,13 +364,13 @@ def pie_optimizer(q, r, betas, gamma, wd,
             print('this model is not using freeform')
 
         print(
-            f"Stage DE {k+1}: Learning Rate={lr}, Iterations={iters/4}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_alpha2) / init_temp_loss}, sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
+            f"Stage DE {k+1}: Learning Rate={lr}, Iterations={iters/4}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_alpha2, ans_delta_q) / init_temp_loss}, sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
 
         combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)),
                                          dim=1)[
                                :, torch.tensor([0, 5, 1, 2, 3, 4])]
         matroxx = torch.cat((matr[0, :].reshape(-1, 6), combined_x_for_print.reshape(-1, 6)), axis=0)
-        twin_plotter(matroxx, q, r * ans_I, ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_I, ans_alpha2)
+        twin_plotter(matroxx, q, r * ans_I, ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_I, ans_alpha2,ans_delta_q)
         # Применяем правило нормализации относительно предыдущих потерь
         if idx > 0:
             rel_losses_stage = list(map(lambda x: x * rel_losses_total[-1], rel_losses_stage))
@@ -348,4 +378,4 @@ def pie_optimizer(q, r, betas, gamma, wd,
     # Накапливаем потери текущего этапа
     rel_losses_total.extend(rel_losses_stage)
 
-    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_sigma1, ans_sigma2, ans_alpha2, loss, rel_losses_total
+    return ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_sigma1, ans_sigma2, ans_alpha2, ans_delta_q, loss, rel_losses_total
