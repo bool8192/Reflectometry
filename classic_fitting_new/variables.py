@@ -15,7 +15,7 @@ Ndots_extr :int = 14
 gap :int = 0.1
 Ndots_trace :int = 3
 Ibkg = torch.nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
-alpha2 = torch.nn.Parameter(torch.tensor(0.62, dtype=torch.float64))
+alpha2 = torch.nn.Parameter(torch.tensor(0.5, dtype=torch.float64))
 delta_q = torch.nn.Parameter(torch.tensor(-2.3e+7, dtype=torch.float64))
 
 
@@ -35,7 +35,7 @@ I0 = (torch.tensor(I0_plus).requires_grad_(True) - Ibkg)
 matr = read_complex_matrix('ref_matrix.txt')
 all_bounds = torch.tensor([
     [[10.0, 10.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-    [[460.0, 600.0], [9.61, 9.63], [6.0, 200.0], [0.0, 0.8], [0.1, 0.9], [0.2, 1.0]],
+    [[460.0, 680.0], [9.32, 9.92], [6.0, 200.0], [0.0, 0.8], [0.1, 0.9], [0.2, 1.0]],
 [[99.99, 100.0], [2.073, 2.075], [0.2, 170.0], [0.0, 0.8], [0.1, 0.9], [0.2, 1.0]]
 
 ]).requires_grad_(True)
@@ -137,7 +137,7 @@ Ibkg_bounds = torch.tensor([0.001, 9000*Ibkg.clone().detach()]).requires_grad_(T
 sigma_bounds1 = torch.tensor([0.001 , 0.02]).requires_grad_(False)
 sigma_bounds2 = torch.tensor([0.001 , 0.02]).requires_grad_(False)
 
-alpha2_bounds = torch.tensor([0.22 , 0.78]).requires_grad_(True)
+alpha2_bounds = torch.tensor([0.60 , 0.78]).requires_grad_(True)
 
-delta_q_bounds = torch.tensor([-6.0e+7, -3.0e+6]).requires_grad_(True)
+delta_q_bounds = torch.tensor([-2.7e+7, -1.8e+7]).requires_grad_(True)
 
