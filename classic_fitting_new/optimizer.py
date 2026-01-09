@@ -333,7 +333,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
     loss_function = Comparator(q, r)
     iters = iterations[-1]
 
-    for k in range(2):
+    for k in range(3):
         if model_type == 'model':
             objective_function_sigma = varsigma(ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q, loss_function.compare,
                                                 all_bounds)

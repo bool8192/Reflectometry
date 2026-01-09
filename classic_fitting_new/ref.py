@@ -51,7 +51,7 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha
     
     Возвращает:
     #r: вектор всех значений коэффициента отражения
-    #y: вектор всех значений коэффициента отражения со свёрткой
+    #r_conv: вектор всех значений коэффициента отражения со свёрткой
     #score: подсветка пиков в r_conv
     """
     r_1, r_real1, r_img1 = calculate_matrices_and_reflection(matrix, rough_res, kmax, q+var_delta_q, Ndots, gap)
@@ -63,7 +63,7 @@ def reflectometry(q, matrix, var_sigma1, var_sigma2, var_I0, var_Ibkg, var_alpha
 
     #score = chain(r_conv)
     score = torch.zeros_like(r_conv, dtype=torch.float64)
-
+    
     return r, r_conv, score
 
 
