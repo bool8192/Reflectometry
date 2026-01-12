@@ -7,9 +7,9 @@ Ndots :int = 200
 rough_res :int = 12
 kmax :int = 1.45e+9
 dq :int = 0.2e+8
-sigma = torch.nn.Parameter(torch.tensor(0.002, dtype=torch.float64))
-sigma1  = torch.nn.Parameter(torch.tensor(0.003, dtype=torch.float64))
-sigma2  = torch.nn.Parameter(torch.tensor(0.003, dtype=torch.float64))
+sigma = torch.nn.Parameter(torch.tensor(0.006, dtype=torch.float64))
+sigma1  = torch.nn.Parameter(torch.tensor(0.006, dtype=torch.float64))
+sigma2  = torch.nn.Parameter(torch.tensor(0.006, dtype=torch.float64))
 Ndots_norm :int = 11
 Ndots_extr :int = 14
 gap :int = 0.1
