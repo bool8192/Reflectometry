@@ -10,12 +10,39 @@ def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I):
     r2, r_conv2, score2 = reflectometry(q, matr, var_sigma1, var_sigma2, var_I, var_Ibkg)
     fig, ax = plt.subplots(figsize=(15, 2.6))
 
-    ax.plot(q.cpu().detach().numpy()[0:len(r.tolist())] * 1e-10, (r).tolist())
-    ax.plot(q.cpu().detach().numpy()[0:len(r_conv2.tolist())] * 1e-10, (var_I * r_conv2).tolist())
+    q_np = q.cpu().detach().numpy()[0:len(r)]
+    x = q_np * 1e-10
+    r_np = r.cpu().detach().numpy() if hasattr(r, "cpu") else np.array(r)
+
+    y_low = r_np - np.sqrt(r_np)
+    y_high = r_np + np.sqrt(r_np)
+
+    ax.fill_between(
+        x,
+        y_low,
+        y_high,
+        color='red',
+        alpha=0.4,
+        label='Эксперимент'
+    )
+
+    ax.plot(
+        q.cpu().detach().numpy()[0:len(r_conv2)] * 1e-10,
+        (var_I * r_conv2).cpu().detach().numpy()
+        if hasattr(r_conv2, "cpu") else (var_I * r_conv2),
+        label='Модель'
+    )
 
     ax.set_yscale('log')
-    plt.grid()
+    ax.set_ylim(bottom=0.3)
+    ax.set_xlabel(r'Волновой вектор, Å$^{-1}$')
+    ax.set_ylabel('Интенсивность')
+    ax.grid(True)
+    ax.legend()
+
     plt.show()
+
+
 
 
 def adamw(q, r, func,

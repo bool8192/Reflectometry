@@ -189,7 +189,7 @@ def gaussian_smooth_1d(x1, kernel_size=7, sigma=None):
     kernel = torch.exp(-0.5 * (t / sigma)**2)
     kernel /= kernel.sum()
 
-    kernel = kernel.view(1, 1, -1).to(x.dtype)  # <---- ядро того же типа
+    kernel = kernel.view(1, 1, -1).to(x.dtype)
 
     x = x.view(1, 1, -1)
 
@@ -231,10 +231,10 @@ def period_loss(q, y, rx):
     max_indices1 = raw_max_indices1[raw_max_indices1 > crit_dot1]
     min_indices1 = raw_min_indices1[raw_min_indices1 > crit_dot1]
 
-    max_indices = max_indices[:-2]
-    min_indices = min_indices[:-2]
-    max_indices1 = max_indices1[:-1]
-    min_indices1 = min_indices1[:-1]
+    max_indices = max_indices[4:26]
+    min_indices = min_indices[4:26]
+    max_indices1 = max_indices1[4:27]
+    min_indices1 = min_indices1[4:27]
 
     # --- координаты экстремумов ---
     x_max, x_min = q[max_indices], q[min_indices]
@@ -295,6 +295,9 @@ def reflectometry_trace(q, y):
 
     max_indices = raw_max_indices[raw_max_indices > crit_dot]
     min_indices = raw_min_indices[raw_min_indices > crit_dot]
+
+    max_indices = max_indices[4:26]
+    min_indices = min_indices[4:26]
 
     # Получение координат и их
     x_max = (q[max_indices])[0:Ndots_trace]

@@ -10,11 +10,36 @@ def twin_plotter(matr, q, r, var_sigma1, var_sigma2, I0, var_Ibkg, var_I, var_al
     r2, r_conv2, score2 = reflectometry(q, matr, var_sigma1, var_sigma2, var_I, var_Ibkg, var_alpha2, var_delta_q)
     fig, ax = plt.subplots(figsize=(15, 2.6))
 
-    ax.plot(q.cpu().detach().numpy()[0:len(r.tolist())] * 1e-10, (r).tolist())
-    ax.plot(q.cpu().detach().numpy()[0:len(r_conv2.tolist())] * 1e-10, (var_I * r_conv2).tolist())
+    q_np = q.cpu().detach().numpy()[0:len(r)]
+    x = q_np * 1e-10
+    r_np = r.cpu().detach().numpy() if hasattr(r, "cpu") else np.array(r)
+
+    y_low = r_np - 4.2*np.sqrt(r_np)
+    y_high = r_np + 4.2*np.sqrt(r_np)
+
+    ax.fill_between(
+        x,
+        y_low,
+        y_high,
+        color='red',
+        alpha=0.4,
+        label='Эксперимент'
+    )
+
+    ax.plot(
+        q.cpu().detach().numpy()[0:len(r_conv2)] * 1e-10,
+        (var_I * r_conv2).cpu().detach().numpy()
+        if hasattr(r_conv2, "cpu") else (var_I * r_conv2),
+        label='Модель'
+    )
 
     ax.set_yscale('log')
-    plt.grid()
+    ax.set_ylim(bottom=0.3)
+    ax.set_xlabel(r'Волновой вектор, Å$^{-1}$')
+    ax.set_ylabel('Интенсивность')
+    ax.grid(True)
+    ax.legend()
+
     plt.show()
 
 
@@ -25,7 +50,7 @@ def adamw_alpha(q, r, func,
           initial_delta_q,
           d_bounds, r_rho_bounds, i_rho_bounds,
           I_bounds, Ibkg_bounds, alpha2_bounds, delta_q_bounds,
-          betas=(0.99, 0.999), gamma=0.98, wd=0,
+          betas=(0.99, 0.999), gamma=0.9, wd=0,
           max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
 
@@ -42,14 +67,14 @@ def adamw_alpha(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_de, 'lr': 3 * lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_de, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_be, 'lr': 0.1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
         {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_alpha2, 'lr': 0.04 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
-        {'params': x_delta_q, 'lr': 10 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
+        {'params': x_delta_q, 'lr': 4 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -139,7 +164,7 @@ def adamw(q, r, func,
           sigma1, sigma2,
           initial_d, initial_r_rho, initial_i_rho, initial_I, initial_Ibkg, ans_alpha2, initial_delta_q,
           d_bounds, r_rho_bounds, i_rho_bounds, I_bounds, Ibkg_bounds, delta_q_bounds,
-          betas=(0.99, 0.999), gamma=0.99, wd=0,
+          betas=(0.99, 0.999), gamma=0.9, wd=0,
           max_iter=1000, k=2, lr=1.2, tol=1e-20):
     k -= 1
 
@@ -155,13 +180,13 @@ def adamw(q, r, func,
     x_Ibkg.retain_grad()
 
     optimizer = optim.AdamW([
-        {'params': x_de, 'lr': 3 * lr, 'weight_decay': wd, 'betas': betas},
+        {'params': x_de, 'lr': 2 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_be, 'lr': 0.1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_r_rho, 'lr': 1 * lr, 'weight_decay': wd, 'betas': betas},
         {'params': x_i_rho, 'lr': lr/20 , 'weight_decay': wd, 'betas': betas},
         {'params': x_I, 'lr': 50.0 * lr, 'weight_decay': wd, 'betas': (0.4, 0.8)},
         {'params': x_Ibkg, 'lr': 0.4 * lr, 'weight_decay': wd, 'betas': betas},
-        {'params': x_delta_q, 'lr': 10*lr, 'weight_decay': wd, 'betas': (0.4, 0.8)}
+        {'params': x_delta_q, 'lr': lr/800, 'weight_decay': wd, 'betas': (0.4, 0.8)}
     ])
     x_d = torch.cat((x_de.reshape(-1, 2), x_be.reshape(-1, 3)), dim=1).flatten()
 
@@ -278,7 +303,7 @@ def pie_optimizer(q, r, betas, gamma, wd,
         init_temp_loss = loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), initial_sigma1, initial_sigma2, I0, ans_Ibkg, ans_alpha2, ans_delta_q)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type=='model':
-            if idx == 0:
+            if idx == 0 or idx == 1 or idx == 2:
                 ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q, loss, rel_losses_stage = adamw_alpha(q, r, loss_class.objective_function,
                                                       initial_sigma1, initial_sigma2,
                                                       ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q,
@@ -348,32 +373,23 @@ def pie_optimizer(q, r, betas, gamma, wd,
                                                        initial_sigma2, ans_I, ans_Ibkg, ans_alpha2, ans_delta_q)
         # Пройти оптимизацию с заданным экземпляром класса и его методом objective_function
         if model_type == 'model':
-            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, ans_delta_q, loss, rel_losses_stage = adamw(q, r,
-                                                                                                      loss_class.objective_function,
-                                                                                                      initial_sigma1,
-                                                                                                      initial_sigma2,
-                                                                                                      ans_d, ans_r_rho,
-                                                                                                      ans_i_rho, ans_I,
-                                                                                                      ans_Ibkg,
-                                                                                                      ans_alpha2,
-                                                                                                      ans_delta_q,
-                                                                                                      d_bounds,
-                                                                                                      r_rho_bounds,
-                                                                                                      i_rho_bounds,
-                                                                                                      I_bounds,
-                                                                                                      Ibkg_bounds,
-                                                                                                      delta_q_bounds,
-                                                                                                      betas=betas,
-                                                                                                      gamma=gamma,
-                                                                                                      wd=wd,
-                                                                                                      lr=lr,
-                                                                                                      max_iter=iters,
-                                                                                                      k=3)
+            ans_d, ans_r_rho, ans_i_rho, ans_I, ans_Ibkg, abs_delta_q, loss, rel_losses_stage = adamw(q, r,
+                                                                                         loss_class.objective_function,
+                                                                                         ans_sigma1, ans_sigma2,
+                                                                                         ans_d, ans_r_rho, ans_i_rho,
+                                                                                         ans_I,
+                                                                                         ans_Ibkg, ans_alpha2, ans_delta_q,
+                                                                                         d_bounds, r_rho_bounds,
+                                                                                         i_rho_bounds, I_bounds,
+                                                                                         Ibkg_bounds, delta_q_bounds,
+                                                                                         betas=betas, gamma=gamma,
+                                                                                         wd=wd,
+                                                                                         lr=lr, max_iter=iters / 3, k=3)
         else:
             print('this model is not using freeform')
 
         print(
-            f"Stage DE {k+1}: Learning Rate={lr}, Iterations={iters/3}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_alpha2, ans_delta_q) / init_temp_loss}, sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
+            f"Stage DE {k+1}: Learning Rate={lr}, Iterations={iters/4}, relative_loss={loss_class.objective_function(ans_d, torch.complex(ans_r_rho, ans_i_rho), ans_sigma1, ans_sigma2, I0, ans_Ibkg, ans_alpha2, ans_delta_q) / init_temp_loss}, sigma1= {ans_sigma1}, sigma2= {ans_sigma2}")
 
         combined_x_for_print = torch.cat((ans_d.reshape(-1, 5), torch.complex(ans_r_rho, ans_i_rho).reshape(-1, 1)),
                                          dim=1)[

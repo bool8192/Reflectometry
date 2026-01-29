@@ -104,7 +104,7 @@ def calculate_matrices_and_reflection(matr, rough_res, kmax, q, Ndots, gap):
     z = transformed[:, 0] * 1.0e+10
     layers = torch.cat((z.reshape(-1, 1), ro.real.reshape(-1, 1), ro.imag.reshape(-1, 1)), dim=1)
 
-    xx = torch.as_tensor(q * 1e-10, dtype=torch.complex128, device=device).view(-1)
+    xx = torch.as_tensor(q * 0.5e-10, dtype=torch.complex128, device=device).view(-1)
     nlayers = layers.size(0) - 2
     npnts = xx.size(0)
     kn = torch.zeros((npnts, nlayers + 2), dtype=torch.complex128, device=device)
